@@ -17,6 +17,7 @@ const tarotCards: Record<number, string> = {
 };
 
 export async function POST(req: Request) {
+
   try {
 
     const body = await req.json();
@@ -27,45 +28,38 @@ export async function POST(req: Request) {
 
     const cardNames = cards.map(
       (card: number) =>
-        tarotCards[card] || `Unknown Card`
+        tarotCards[card] || "Unknown Card"
     );
 
     const systemPrompt = `
-Kamu adalah Oracle Noir Tarot.
+Kamu adalah THE CHARIOT Tarot AI.
 
-Gaya reading:
-- misterius
-- personal
-- emosional
+Style:
+- mystical
 - immersive
 - cinematic
+- emotional
+- personal
 - natural seperti tarot reader manusia
 
 RULES:
-- Fokus refleksi diri dan energi emosional.
-- Jangan mengklaim masa depan pasti.
-- Jangan diagnosis medis.
-- Jangan manipulatif.
-- Reading harus intimate dan natural.
-- Gunakan bahasa Indonesia.
-- Hindari tone AI formal.
-
-FLOW:
-- Jelaskan energi dari tiap kartu.
-- Buat reading terasa hidup dan personal.
-- Gunakan simbolisme emosional.
-- Hindari pengulangan frasa.
+- jangan terdengar seperti AI formal
+- jangan terlalu pendek
+- gunakan bahasa Indonesia
+- fokus refleksi diri dan energi emosional
+- jangan mengklaim masa depan pasti
+- jangan diagnosis medis
 
 FORMAT:
 
 CARD 1:
-akar energi atau sumber masalah.
+akar energi atau sumber masalah
 
 CARD 2:
-kondisi sekarang atau konflik utama.
+situasi sekarang atau konflik utama
 
 CARD 3:
-arah energi atau kemungkinan hasil.
+arah energi atau kemungkinan hasil
 
 Tambahkan:
 - hidden energy
@@ -74,11 +68,7 @@ Tambahkan:
 - saran tarot
 - pesan akhir
 
-STYLE:
-- maksimal 2 paragraf pendek per kartu.
-- immersive.
-- mystical.
-- cinematic.
+Gunakan gaya intimate dan immersive.
 `;
 
     const userPrompt = `
@@ -88,7 +78,7 @@ Pertanyaan user:
 Kartu tarot:
 ${cardNames.join(", ")}
 
-Berikan pembacaan tarot premium yang emosional, immersive, dan terasa personal.
+Buat pembacaan tarot premium yang panjang, emosional, cinematic, dan personal.
 `;
 
     const response =
@@ -107,9 +97,9 @@ Berikan pembacaan tarot premium yang emosional, immersive, dan terasa personal.
           },
         ],
 
-        temperature: 0.95,
+        temperature: 1,
 
-        max_tokens: 1200,
+        max_tokens: 1400,
       });
 
     const result =
@@ -117,8 +107,8 @@ Berikan pembacaan tarot premium yang emosional, immersive, dan terasa personal.
 
     return Response.json({
       success: true,
-      cards: cardNames,
       result,
+      cards: cardNames,
     });
 
   } catch (error) {
@@ -128,7 +118,7 @@ Berikan pembacaan tarot premium yang emosional, immersive, dan terasa personal.
     return Response.json({
       success: false,
       result:
-        "OpenAI API Error / saldo mungkin habis 😅🔥",
+        "Terjadi kesalahan saat membaca tarot 😅",
     });
   }
 }
