@@ -36,41 +36,34 @@ export default function Home() {
   ];
 
   const [question, setQuestion] = useState("");
-  const [preview, setPreview] =
-    useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [language, setLanguage] = useState("id");
 
-  const [language, setLanguage] =
-    useState("id");
+  const [loading, setLoading] = useState(false);
+  const [showCards, setShowCards] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [showCards, setShowCards] =
-    useState(false);
-
-  const [showResult, setShowResult] =
-    useState(false);
-
-  const [reading, setReading] =
-    useState("");
-
-  const [selectedCards, setSelectedCards] =
-    useState<number[]>([]);
-
-  const [replaceIndex, setReplaceIndex] =
-    useState(0);
+  const [reading, setReading] = useState("");
 
   const [shuffledDeck, setShuffledDeck] =
     useState<string[]>([]);
 
-  /* SHUFFLE SYSTEM */
+  const [selectedCards, setSelectedCards] =
+    useState<string[]>([]);
+
+  const [replaceIndex, setReplaceIndex] =
+    useState(0);
+
+  /* SHUFFLE DECK */
   const shuffleDeck = () => {
 
     const deck: string[] = [];
 
     let majorCount = 0;
 
-    for (let i = 0; i < 9; i++) {
+    const usedCards = new Set<string>();
+
+    while (deck.length < 9) {
 
       const allowMajor =
         majorCount < 1;
@@ -79,37 +72,51 @@ export default function Home() {
         allowMajor &&
         Math.random() < 0.35;
 
+      let randomCard = "";
+
       if (isMajor) {
 
-        const randomMajor =
+        randomCard =
           majorArcana[
             Math.floor(
               Math.random() *
-              majorArcana.length
+                majorArcana.length
             )
           ];
-
-        deck.push(randomMajor);
-
-        majorCount++;
 
       } else {
 
-        const randomMinor =
+        randomCard =
           minorArcana[
             Math.floor(
               Math.random() *
-              minorArcana.length
+                minorArcana.length
             )
           ];
 
-        deck.push(randomMinor);
+      }
+
+      if (!usedCards.has(randomCard)) {
+
+        usedCards.add(randomCard);
+
+        deck.push(randomCard);
+
+        if (
+          majorArcana.includes(
+            randomCard
+          )
+        ) {
+          majorCount++;
+        }
 
       }
 
     }
 
-    deck.sort(() => Math.random() - 0.5);
+    deck.sort(
+      () => Math.random() - 0.5
+    );
 
     setShuffledDeck(deck);
 
@@ -122,75 +129,8 @@ export default function Home() {
 
     setTimeout(() => {
 
-const shuffleDeck = () => {
+      shuffleDeck();
 
-  const deck: string[] = [];
-
-  let majorCount = 0;
-
-  const usedCards = new Set<string>();
-
-  while (deck.length < 9) {
-
-    const allowMajor =
-      majorCount < 1;
-
-    const isMajor =
-      allowMajor &&
-      Math.random() < 0.35;
-
-    let selectedCard = "";
-
-    if (isMajor) {
-
-      selectedCard =
-        majorArcana[
-          Math.floor(
-            Math.random() *
-            majorArcana.length
-          )
-        ];
-
-    } else {
-
-      selectedCard =
-        minorArcana[
-          Math.floor(
-            Math.random() *
-            minorArcana.length
-          )
-        ];
-
-    }
-
-    /* ANTI DUPLICATE */
-    if (
-      usedCards.has(selectedCard)
-    ) {
-      continue;
-    }
-
-    usedCards.add(selectedCard);
-
-    deck.push(selectedCard);
-
-    if (
-      majorArcana.includes(
-        selectedCard
-      )
-    ) {
-      majorCount++;
-    }
-
-  }
-
-  deck.sort(
-    () => Math.random() - 0.5
-  );
-
-  setShuffledDeck(deck);
-
-};
       setLoading(false);
 
       setShowCards(true);
@@ -206,34 +146,30 @@ const shuffleDeck = () => {
 
     try {
 
-      const cardNames =
-        selectedCards.map(
-          (card) =>
-            shuffledDeck[card - 1]
+      const response =
+        await fetch(
+          "/api/tarot",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+
+              question,
+
+              cards:
+                selectedCards,
+
+              language,
+
+            }),
+
+          }
         );
-
-      const response = await fetch(
-        "/api/tarot",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-
-            question,
-
-            cards: cardNames,
-
-            language,
-
-          }),
-
-        }
-      );
 
       const data =
         await response.json();
@@ -286,9 +222,9 @@ const shuffleDeck = () => {
 
   };
 
-  /* CARD SELECT */
+  /* SELECT CARD */
   const handleCardSelect = (
-    card: number
+    card: string
   ) => {
 
     if (
@@ -322,6 +258,25 @@ const shuffleDeck = () => {
 
   };
 
+  /* RESET */
+  const handleReset = () => {
+
+    setQuestion("");
+
+    setPreview(null);
+
+    setReading("");
+
+    setSelectedCards([]);
+
+    setShowCards(false);
+
+    setShowResult(false);
+
+    setReplaceIndex(0);
+
+  };
+
   return (
 
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-green-950 via-green-900 to-black flex items-center justify-center px-4 py-10 text-yellow-300">
@@ -329,7 +284,7 @@ const shuffleDeck = () => {
       {/* LOADING */}
       {loading && (
 
-        <div className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center text-center px-6">
+        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center text-center px-6">
 
           <div className="w-32 h-32 rounded-full bg-yellow-400/10 blur-3xl animate-pulse absolute" />
 
@@ -344,8 +299,8 @@ const shuffleDeck = () => {
           <h2 className="text-2xl text-yellow-200 mb-3 tracking-wide">
 
             {language === "id"
-              ? "Mengocok Kartu..."
-              : "Shuffling Cards..."}
+              ? "Membaca Energi Kamu..."
+              : "Reading Your Energy..."}
 
           </h2>
 
@@ -353,21 +308,12 @@ const shuffleDeck = () => {
 
       )}
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 overflow-hidden">
-
-        <div className="absolute w-[500px] h-[500px] bg-yellow-500/20 rounded-full blur-3xl top-[-200px] left-[-100px] animate-pulse" />
-
-        <div className="absolute w-[500px] h-[500px] bg-green-400/20 rounded-full blur-3xl bottom-[-200px] right-[-100px] animate-pulse" />
-
-      </div>
-
-      {/* RESULT PAGE */}
+      {/* RESULT */}
       {showResult ? (
 
-        <div className="relative z-10 w-full max-w-4xl rounded-[32px] border border-yellow-500/20 bg-[#07140f]/95 shadow-[0_0_80px_rgba(255,215,0,0.08)] p-6 md:p-10">
+        <div className="relative z-10 w-full max-w-4xl rounded-[32px] border border-yellow-500/20 bg-white/5 backdrop-blur-md p-6 md:p-10">
 
-          <h1 className="text-4xl md:text-6xl text-center font-bold text-yellow-300 mb-8">
+          <h1 className="text-4xl md:text-6xl text-center font-bold text-yellow-300 mb-6">
 
             {language === "id"
               ? "Hasil Pembacaan"
@@ -375,64 +321,47 @@ const shuffleDeck = () => {
 
           </h1>
 
-          {/* RESULT CARDS */}
-          <div className="grid grid-cols-3 gap-4 mb-10">
+          {/* CARDS */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
 
-            {selectedCards.map((card, i) => (
+            {selectedCards.map(
+              (card, i) => (
 
-              <div
-                key={i}
-                className="h-32 md:h-44 rounded-3xl border border-yellow-500/20 bg-black/40 flex flex-col items-center justify-center text-yellow-300"
-              >
+                <div
+                  key={i}
+                  className="h-32 md:h-44 rounded-3xl border border-yellow-500/20 bg-black/40 flex items-center justify-center text-center p-4 text-yellow-300 text-xl font-bold"
+                >
 
-                <div className="text-lg md:text-2xl font-bold text-center px-2">
-
-                  {shuffledDeck[card - 1]}
+                  {card}
 
                 </div>
 
-              </div>
-
-            ))}
+              )
+            )}
 
           </div>
 
-          {/* AI RESULT */}
-          <div className="rounded-3xl border border-yellow-500/20 bg-black/40 p-6 text-yellow-50 leading-loose text-base md:text-xl whitespace-pre-line">
+          {/* READING */}
+          <div className="rounded-3xl border border-yellow-500/20 bg-black/40 p-6 text-yellow-100/80 leading-relaxed whitespace-pre-line text-sm md:text-lg">
 
             {reading}
-<div className="mt-8 text-center">
 
-  <button
-    onClick={() => {
+          </div>
 
-      setQuestion("");
+          {/* BACK BUTTON */}
+          <div className="mt-8 text-center">
 
-      setPreview(null);
+            <button
+              onClick={handleReset}
+              className="underline text-yellow-300 hover:text-yellow-100 transition"
+            >
 
-      setReading("");
+              {language === "id"
+                ? "Menu Utama"
+                : "Main Menu"}
 
-      setSelectedCards([]);
+            </button>
 
-      setShowCards(false);
-
-      setShowResult(false);
-
-      setShuffledDeck([]);
-
-      setReplaceIndex(0);
-
-    }}
-    className="underline text-yellow-300 hover:text-yellow-100 transition-all duration-300"
-  >
-
-    {language === "id"
-      ? "Menu Utama"
-      : "Main Menu"}
-
-  </button>
-
-</div>
           </div>
 
         </div>
@@ -453,68 +382,89 @@ const shuffleDeck = () => {
           <p className="text-yellow-100/60 mb-10 text-center">
 
             {language === "id"
-              ? "Deck telah dikocok secara acak"
-              : "Deck has been shuffled randomly"}
+              ? "Pilih kartu yang paling terhubung dengan energi kamu"
+              : "Choose cards that resonate with your energy"}
 
           </p>
 
           {/* CARDS */}
           <div className="grid grid-cols-3 gap-4 max-w-xl">
 
-            {[1,2,3,4,5,6,7,8,9].map((card) => {
+            {shuffledDeck.map(
+              (card, i) => {
 
-              const active =
-                selectedCards.includes(card);
+                const active =
+                  selectedCards.includes(
+                    card
+                  );
 
-              return (
+                return (
 
-                <button
-                  key={card}
-                  onClick={() =>
-                    handleCardSelect(card)
-                  }
-                  className={`h-32 md:h-48 rounded-3xl border flex items-center justify-center text-4xl font-bold transition-all duration-300 cursor-pointer hover:scale-105 ${
-                    active
-                      ? "border-yellow-300 bg-yellow-500/10 shadow-[0_0_40px_rgba(255,215,0,0.45)]"
-                      : "border-yellow-500/20 bg-black/40 shadow-[0_0_40px_rgba(255,215,0,0.1)]"
-                  }`}
-                >
+                  <button
+                    key={i}
+                    onClick={() =>
+                      handleCardSelect(
+                        card
+                      )
+                    }
+                    className={`h-32 md:h-48 rounded-3xl border flex items-center justify-center text-center p-3 text-lg md:text-2xl font-bold transition-all duration-300 cursor-pointer backdrop-blur-md hover:scale-105 ${
+                      active
+                        ? "border-yellow-300 bg-yellow-500/10 shadow-[0_0_40px_rgba(255,215,0,0.45)]"
+                        : "border-yellow-500/20 bg-black/40 shadow-[0_0_40px_rgba(255,215,0,0.1)]"
+                    }`}
+                  >
 
-                  ?
+                    {card}
 
-                </button>
+                  </button>
 
-              );
+                );
 
-            })}
+              }
+            )}
 
           </div>
 
           {/* SELECTED */}
           <div className="mt-10 w-full max-w-xl">
 
+            <h2 className="text-yellow-200 text-xl mb-4 text-center">
+
+              {language === "id"
+                ? "Kartu Terpilih"
+                : "Selected Cards"}
+
+            </h2>
+
             <div className="grid grid-cols-3 gap-4">
 
-              {[0,1,2].map((slot) => (
+              {[0,1,2].map(
+                (slot) => (
 
-                <div
-                  key={slot}
-                  className="h-20 rounded-2xl border border-yellow-500/20 bg-black/40 flex items-center justify-center text-3xl font-bold text-yellow-300"
-                >
+                  <div
+                    key={slot}
+                    className="h-24 rounded-2xl border border-yellow-500/20 bg-black/40 flex items-center justify-center text-center p-2 text-sm font-bold text-yellow-300"
+                  >
 
-                  {selectedCards[slot] || "?"}
+                    {selectedCards[
+                      slot
+                    ] || "?"}
 
-                </div>
+                  </div>
 
-              ))}
+                )
+              )}
 
             </div>
 
-            {/* REVEAL BUTTON */}
-            {selectedCards.length === 3 && (
+            {/* BUTTON */}
+            {selectedCards.length ===
+              3 && (
 
               <button
-                onClick={handleReveal}
+                onClick={
+                  handleReveal
+                }
                 className="mt-8 w-full bg-yellow-500 hover:bg-yellow-400 transition-all duration-300 text-black py-4 rounded-2xl text-lg md:text-xl font-bold shadow-[0_0_45px_rgba(255,215,0,0.7)]"
               >
 
@@ -533,7 +483,7 @@ const shuffleDeck = () => {
       ) : (
 
         /* MAIN PAGE */
-        <div className="relative z-10 w-full max-w-md md:max-w-2xl rounded-[32px] border border-yellow-500/20 bg-[#07140f]/95 shadow-[0_0_80px_rgba(255,215,0,0.08)] p-5 md:p-10">
+        <div className="relative z-10 w-full max-w-md md:max-w-2xl rounded-[32px] border border-yellow-500/20 bg-white/5 backdrop-blur-md p-5 md:p-10">
 
           <div className="flex flex-col items-center text-center mb-8">
 
@@ -548,12 +498,20 @@ const shuffleDeck = () => {
           {/* LANGUAGE */}
           <div className="mb-6">
 
+            <label className="block text-yellow-200 mb-2">
+
+              Language
+
+            </label>
+
             <select
               value={language}
               onChange={(e) =>
-                setLanguage(e.target.value)
+                setLanguage(
+                  e.target.value
+                )
               }
-              className="w-full rounded-2xl border border-yellow-500/30 bg-black/30 p-3 md:p-4 text-yellow-100 outline-none"
+              className="w-full rounded-2xl border border-yellow-500/30 bg-black/30 p-4 text-yellow-100"
             >
 
               <option value="id">
@@ -568,15 +526,25 @@ const shuffleDeck = () => {
 
           </div>
 
-          {/* PHOTO */}
+          {/* IMAGE */}
           <div className="mb-6">
+
+            <label className="block text-yellow-200 mb-3">
+
+              {language === "id"
+                ? "Upload Foto Kamu"
+                : "Upload Your Photo"}
+
+            </label>
 
             <label className="cursor-pointer block">
 
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleImage}
+                onChange={
+                  handleImage
+                }
                 className="hidden"
               />
 
@@ -587,12 +555,12 @@ const shuffleDeck = () => {
                   <img
                     src={preview}
                     alt="Preview"
-                    className="w-full h-[180px] md:h-[300px] object-contain bg-black"
+                    className="w-full h-[220px] object-contain bg-black"
                   />
 
                 ) : (
 
-                  <div className="h-[180px] md:h-[300px] flex items-center justify-center text-yellow-100/50">
+                  <div className="h-[220px] flex items-center justify-center text-yellow-100/50">
 
                     {language === "id"
                       ? "Klik Untuk Upload Foto"
@@ -611,10 +579,20 @@ const shuffleDeck = () => {
           {/* QUESTION */}
           <div className="mb-8">
 
+            <label className="block text-yellow-200 mb-2">
+
+              {language === "id"
+                ? "Pertanyaan Kamu"
+                : "Your Question"}
+
+            </label>
+
             <textarea
               value={question}
               onChange={(e) =>
-                setQuestion(e.target.value)
+                setQuestion(
+                  e.target.value
+                )
               }
               maxLength={2000}
               placeholder={
@@ -622,17 +600,20 @@ const shuffleDeck = () => {
                   ? "Tulis pertanyaan kamu di sini..."
                   : "Type your question here..."
               }
-              className="w-full h-28 md:h-40 rounded-2xl border border-yellow-500/30 bg-black/30 p-4 text-yellow-100 placeholder:text-yellow-100/30 outline-none"
+              className="w-full h-40 rounded-2xl border border-yellow-500/30 bg-black/30 p-4 text-yellow-100 placeholder:text-yellow-100/30 outline-none"
             />
 
           </div>
 
           {/* BUTTON */}
-          {question.trim() !== "" && (
+          {question.trim() !==
+            "" && (
 
             <button
               type="button"
-              onClick={handleReading}
+              onClick={
+                handleReading
+              }
               className="w-full bg-yellow-500 hover:bg-yellow-400 transition-all duration-300 text-black py-4 rounded-2xl text-lg md:text-xl font-bold shadow-[0_0_45px_rgba(255,215,0,0.7)]"
             >
 
