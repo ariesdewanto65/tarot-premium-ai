@@ -3,7 +3,37 @@
 import { useState } from "react";
 
 export default function Home() {
+const majorArcana = [
+  "The Fool",
+  "The Magician",
+  "The High Priestess",
+  "The Empress",
+  "The Emperor",
+  "The Hierophant",
+  "The Lovers",
+  "The Chariot",
+  "Strength",
+  "The Hermit",
+];
 
+const minorArcana = [
+  "Ace of Cups",
+  "Two of Cups",
+  "Three of Cups",
+  "Four of Cups",
+  "Five of Wands",
+  "Six of Swords",
+  "Seven of Pentacles",
+  "Eight of Wands",
+  "Nine of Swords",
+  "Ten of Pentacles",
+
+  "Ace of Pentacles",
+  "Two of Swords",
+  "Knight of Cups",
+  "Queen of Wands",
+  "King of Pentacles",
+];
   const [question, setQuestion] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [language, setLanguage] = useState("id");
@@ -13,10 +43,47 @@ export default function Home() {
   const [showResult, setShowResult] = useState(false);
 
   const [reading, setReading] = useState("");
-
-  const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [shuffledDeck, setShuffledDeck] = useState<string[]>([]);
   const [replaceIndex, setReplaceIndex] = useState(0);
+  const shuffleDeck = () => {
 
+  const deck: string[] = [];
+
+  for (let i = 0; i < 9; i++) {
+
+    const isMajor =
+      Math.random() < 0.35;
+
+    if (isMajor) {
+
+      const randomMajor =
+        majorArcana[
+          Math.floor(
+            Math.random() *
+              majorArcana.length
+          )
+        ];
+
+      deck.push(randomMajor);
+
+    } else {
+
+      const randomMinor =
+        minorArcana[
+          Math.floor(
+            Math.random() *
+              minorArcana.length
+          )
+        ];
+
+      deck.push(randomMinor);
+
+    }
+
+  }
+
+  setShuffledDeck(deck);
+};
   /* START READING */
   const handleReading = () => {
 
@@ -25,6 +92,8 @@ export default function Home() {
     setTimeout(() => {
 
       setLoading(false);
+
+      shuffleDeck();
 
       setShowCards(true);
 
@@ -39,17 +108,9 @@ export default function Home() {
 
     try {
 
-      const tarotMap: Record<number, string> = {
-
-        1: "The Magician",
-        2: "The High Priestess",
-        3: "The Empress",
-        4: "The Emperor",
-        5: "Five of Wands",
-        6: "The Lovers",
-        7: "The Chariot",
-        8: "Strength",
-        9: "The Hermit",
+     const cardNames = selectedCards.map(
+     (card) => shuffledDeck[card - 1]
+    );
 
       };
 
