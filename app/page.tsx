@@ -334,7 +334,38 @@ export default function Home() {
           <div className="rounded-3xl border border-yellow-500/20 bg-black/40 p-6 text-yellow-50 leading-loose text-base md:text-xl whitespace-pre-line">
 
             {reading}
+<div className="mt-8 text-center">
 
+  <button
+    onClick={() => {
+
+      setQuestion("");
+
+      setPreview(null);
+
+      setReading("");
+
+      setSelectedCards([]);
+
+      setShowCards(false);
+
+      setShowResult(false);
+
+      setShuffledDeck([]);
+
+      setReplaceIndex(0);
+
+    }}
+    className="underline text-yellow-300 hover:text-yellow-100 transition-all duration-300"
+  >
+
+    {language === "id"
+      ? "Menu Utama"
+      : "Main Menu"}
+
+  </button>
+
+</div>
           </div>
 
         </div>
