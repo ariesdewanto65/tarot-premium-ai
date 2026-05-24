@@ -59,21 +59,24 @@ RULES:
 - jangan diagnosis medis
 FORMAT:
 
-CARD 1:
-akar energi atau sumber masalah
+CARD 1: [NAMA KARTU PERTAMA]
+Fokus pada akar energi atau sumber masalah.
 
-CARD 2:
-situasi sekarang atau konflik utama
+WAJIB tulis nama kartu asli user di judul CARD 1.
 
-CARD 3:
-arah energi atau kemungkinan hasil
+CARD 2: [NAMA KARTU KEDUA]
+Fokus pada situasi sekarang atau konflik utama.
 
-Tambahkan:
-- hidden energy
-- kekuatan user
-- tantangan user
-- saran tarot
-- pesan akhir
+WAJIB tulis nama kartu asli user di judul CARD 2.
+
+CARD 3: [NAMA KARTU KETIGA]
+Fokus pada arah energi atau kemungkinan hasil.
+
+WAJIB tulis nama kartu asli user di judul CARD 3.
+
+Jangan gunakan nama kartu lain.
+Jangan gunakan reversed card.
+Jangan improvisasi mengganti kartu.
 
 Gunakan gaya intimate dan immersive.
 `;
@@ -96,6 +99,13 @@ Jangan mengganti nama kartu.
 Jangan menambahkan kartu lain.
 
 Buat pembacaan tarot premium yang panjang, emosional, cinematic, dan personal.
+FORMAT WAJIB:
+
+CARD 1: ${cardNames[0]}
+CARD 2: ${cardNames[1]}
+CARD 3: ${cardNames[2]}
+
+Gunakan EXACT nama kartu di atas.
 `;
 
     const response =
