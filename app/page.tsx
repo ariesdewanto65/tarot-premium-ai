@@ -80,7 +80,7 @@ export default function Home() {
 
       const data = await response.json();
 
-      setReading(data.reading);
+      setReading(data.result);
 
       setLoading(false);
 
