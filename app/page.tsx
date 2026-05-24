@@ -500,7 +500,29 @@ export default function Home() {
             )}
 
           </div>
+           {/* ULANG BUTTON */}
+<div className="mb-6 text-center">
 
+  <button
+    onClick={() => {
+
+      setSelectedCards([]);
+
+      setReplaceIndex(0);
+
+      shuffleDeck();
+
+    }}
+    className="underline text-yellow-300 hover:text-yellow-100 transition-all duration-300"
+  >
+
+    {language === "id"
+      ? "Ulang"
+      : "Shuffle Again"}
+
+  </button>
+
+</div>
           {/* SELECTED */}
           <div className="mt-10 w-full max-w-xl">
 
