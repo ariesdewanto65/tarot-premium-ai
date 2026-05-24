@@ -122,8 +122,75 @@ export default function Home() {
 
     setTimeout(() => {
 
-      shuffleDeck();
+const shuffleDeck = () => {
 
+  const deck: string[] = [];
+
+  let majorCount = 0;
+
+  const usedCards = new Set<string>();
+
+  while (deck.length < 9) {
+
+    const allowMajor =
+      majorCount < 1;
+
+    const isMajor =
+      allowMajor &&
+      Math.random() < 0.35;
+
+    let selectedCard = "";
+
+    if (isMajor) {
+
+      selectedCard =
+        majorArcana[
+          Math.floor(
+            Math.random() *
+            majorArcana.length
+          )
+        ];
+
+    } else {
+
+      selectedCard =
+        minorArcana[
+          Math.floor(
+            Math.random() *
+            minorArcana.length
+          )
+        ];
+
+    }
+
+    /* ANTI DUPLICATE */
+    if (
+      usedCards.has(selectedCard)
+    ) {
+      continue;
+    }
+
+    usedCards.add(selectedCard);
+
+    deck.push(selectedCard);
+
+    if (
+      majorArcana.includes(
+        selectedCard
+      )
+    ) {
+      majorCount++;
+    }
+
+  }
+
+  deck.sort(
+    () => Math.random() - 0.5
+  );
+
+  setShuffledDeck(deck);
+
+};
       setLoading(false);
 
       setShowCards(true);
