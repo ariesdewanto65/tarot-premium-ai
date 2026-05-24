@@ -26,10 +26,7 @@ export async function POST(req: Request) {
 
     const cards = body.cards || [];
 
-    const cardNames = cards.map(
-      (card: number) =>
-        tarotCards[card] || "Unknown Card"
-    );
+   const cardNames = cards;
 
     const systemPrompt = `
 Kamu adalah THE CHARIOT Tarot AI.
