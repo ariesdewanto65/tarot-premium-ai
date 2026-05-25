@@ -454,7 +454,7 @@ export default function Home() {
 
   <div className="w-full h-full flex flex-col">
 
-    <div className="flex-1 overflow-hidden rounded-t-[28px]">
+    <div className="flex-1 overflow-hidden rounded-t-[28px] min-h-0">
 
       <img
         src={getCardImage(card)}
@@ -464,7 +464,8 @@ export default function Home() {
 
     </div>
 
-    <div className="mt-auto bg-black/80 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] text-center pt-3 pb-4 border-t border-yellow-500/20 rounded-b-[28px]">
+    <div className="bg-black/80 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] text-center pt-3 pb-4 border-t border-yellow-500/20 rounded-b-[28px]">
+
       {card}
 
     </div>
