@@ -66,7 +66,15 @@ export default function Home() {
 
   const [replaceIndex, setReplaceIndex] =
     useState(0);
+  const getCardImage = (
+  card: string
+) => {
 
+  return `/tarot/${card
+    .toLowerCase()
+    .replace(/\s+/g, "-")}.jpg`;
+
+}; 
   /* SHUFFLE DECK */
   const shuffleDeck = () => {
 
@@ -442,29 +450,15 @@ export default function Home() {
                     {/* CONTENT */}
                     <div className="relative z-10 flex flex-col items-center justify-center h-full p-4">
 
-                      {active ? (
+{active ? (
 
-                        <>
-                          <div className="text-yellow-200 text-xs tracking-[4px] mb-3 opacity-70">
+  <img
+    src={getCardImage(card)}
+    alt={card}
+    className="w-full h-full object-cover rounded-[28px]"
+  />
 
-                            REVEALED
-
-                          </div>
-
-                          <div className="text-yellow-300 text-lg md:text-2xl font-bold text-center leading-tight">
-
-                            {card}
-
-                          </div>
-
-                          <div className="mt-4 text-yellow-100/40 text-xs tracking-[3px]">
-
-                            THE CHARIOT
-
-                          </div>
-                        </>
-
-                      ) : (
+) : (
 
                         <>
                           <div className="text-yellow-500/30 text-6xl md:text-7xl mb-4 group-hover:scale-110 transition-all duration-500">
