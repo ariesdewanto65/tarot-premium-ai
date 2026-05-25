@@ -452,11 +452,21 @@ export default function Home() {
 
 {active ? (
 
-  <img
-    src={getCardImage(card)}
-    alt={card}
-    className="w-full h-full object-cover rounded-[28px]"
-  />
+  <div className="relative w-full h-full">
+
+    <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] border border-yellow-500/30 shadow-[0_0_15px_rgba(255,215,0,0.35)]">
+
+      {card}
+
+    </div>
+
+    <img
+      src={getCardImage(card)}
+      alt={card}
+      className="w-full h-full object-cover rounded-[28px]"
+    />
+
+  </div>
 
 ) : (
 
