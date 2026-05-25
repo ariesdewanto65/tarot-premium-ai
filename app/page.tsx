@@ -464,8 +464,7 @@ export default function Home() {
 
     </div>
 
-    <div className="bg-black/80 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] text-center py-2 border-t border-yellow-500/20 rounded-b-[28px]">
-
+    <div className="mt-auto bg-black/80 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] text-center pt-3 pb-4 border-t border-yellow-500/20 rounded-b-[28px]">
       {card}
 
     </div>
