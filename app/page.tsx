@@ -455,7 +455,7 @@ export default function Home() {
     <img
       src={getCardImage(card)}
       alt={card}
-      className="w-full h-full object-cover rounded-[28px]"
+      className="w-full h-full object-contain rounded-[28px] bg-black"
     />
 
   ) : (
