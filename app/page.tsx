@@ -447,58 +447,44 @@ export default function Home() {
 
                     </div>
 
-                    {/* CONTENT */}
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full p-4">
+                   {/* CONTENT */}
+<div className="relative z-10 flex flex-col items-center justify-center h-full p-4">
 
-{active ? (
+  {active ? (
 
-  <div className="w-full h-full flex flex-col">
+    <img
+      src={getCardImage(card)}
+      alt={card}
+      className="w-full h-full object-cover rounded-[28px]"
+    />
 
-    <div className="flex-1 overflow-hidden rounded-t-[28px] min-h-0">
+  ) : (
 
-      <img
-        src={getCardImage(card)}
-        alt={card}
-        className="w-full h-full object-cover"
-      />
+    <>
+      <div className="text-yellow-500/30 text-6xl md:text-7xl mb-4 group-hover:scale-110 transition-all duration-500">
 
-    </div>
+        ✦
 
-    <div className="bg-black/80 backdrop-blur-md text-yellow-200 text-xs md:text-sm font-bold tracking-[2px] text-center pt-3 pb-4 border-t border-yellow-500/20 rounded-b-[28px]">
+      </div>
 
-      {card}
+      <div className="text-yellow-300 text-sm md:text-lg font-bold tracking-[6px] text-center">
 
-    </div>
+        THE
+        <br />
+        CHARIOT
 
-  </div>
+      </div>
 
-) : (
-                        <>
-                          <div className="text-yellow-500/30 text-6xl md:text-7xl mb-4 group-hover:scale-110 transition-all duration-500">
+      <div className="mt-4 text-yellow-100/30 text-[10px] tracking-[4px] uppercase">
 
-                            ✦
+        Tap To Reveal
 
-                          </div>
+      </div>
+    </>
 
-                          <div className="text-yellow-300 text-sm md:text-lg font-bold tracking-[6px] text-center">
+  )}
 
-                            THE
-                            <br />
-                            CHARIOT
-
-                          </div>
-
-                          <div className="mt-4 text-yellow-100/30 text-[10px] tracking-[4px] uppercase">
-
-                            Tap To Reveal
-
-                          </div>
-                        </>
-
-                      )}
-
-                    </div>
-
+</div>
                   </button>
 
                 );
