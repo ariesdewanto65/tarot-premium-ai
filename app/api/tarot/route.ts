@@ -1,30 +1,22 @@
+
+
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const tarotCards: Record<number, string> = {
-  1: "Ace of Cups",
-  2: "Two of Wands",
-  3: "Three of Pentacles",
-  4: "Four of Cups",
-  5: "The Hierophant",
-  6: "Six of Swords",
-  7: "The Chariot",
-  8: "Strength",
-  9: "The Hermit",
-};
 
 export async function POST(req: Request) {
 
   try {
 
     const body = await req.json();
-
+    const image = body.image || null;
     const question = body.question || "";
 
-    const cards = body.cards || [];
+    const cards: string[] =
+    body.cards || [];
 
    const cardNames = cards;
 
@@ -81,7 +73,27 @@ Tambahkan:
 Gunakan gaya intimate dan immersive.
 `;
 
-    const userPrompt = `
+    
+
+    const response =
+      await openai.chat.completions.create({
+
+        model: "gpt-4o-mini",
+
+       messages: [
+  {
+    role: "system",
+    content: systemPrompt,
+  },
+
+  {
+    role: "user",
+
+    content: [
+  {
+    type: "text" as const,
+
+    text: `
 Pertanyaan user:
 "${question}"
 
@@ -94,35 +106,37 @@ ${cardNames[1]}
 CARD 3:
 ${cardNames[2]}
 
-WAJIB gunakan kartu di atas.
+WAJIB gunakan EXACT kartu di atas.
 Jangan mengganti nama kartu.
 Jangan menambahkan kartu lain.
 
-Buat pembacaan tarot premium yang panjang, emosional, cinematic, dan personal.
-FORMAT WAJIB:
+Buat pembacaan tarot premium yang panjang, emosional, cinematic, personal, immersive, dan mystical.
 
-CARD 1: ${cardNames[0]}
-CARD 2: ${cardNames[1]}
-CARD 3: ${cardNames[2]}
+Jika ada foto user:
+- baca vibe emosional
+- ekspresi wajah
+- aura visual
+- energi visual
+- body language
 
-Gunakan EXACT nama kartu di atas.
-`;
+Gabungkan interpretasi foto dengan tarot reading secara natural.
+`,
+  },
 
-    const response =
-      await openai.chat.completions.create({
+  ...(image
+    ? [
+        {
+          type: "image_url" as const,
 
-        model: "gpt-4o-mini",
-
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
+          image_url: {
+            url: image,
           },
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
+        },
+      ]
+    : []),
+],
+  },
+],
 
         temperature: 1,
 
@@ -148,4 +162,4 @@ Gunakan EXACT nama kartu di atas.
         "Terjadi kesalahan saat membaca tarot 😅",
     });
   }
-}
+}                

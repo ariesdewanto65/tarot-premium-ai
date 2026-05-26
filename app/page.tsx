@@ -42,7 +42,8 @@ export default function Home() {
 
   const [preview, setPreview] =
     useState<string | null>(null);
-
+    const [imageBase64, setImageBase64] =
+  useState("");
   const [language, setLanguage] =
     useState("id");
 
@@ -185,14 +186,16 @@ export default function Home() {
 
             body: JSON.stringify({
 
-              question,
+  question,
 
-              cards:
-                selectedCards,
+  cards:
+    selectedCards,
 
-              language,
+  language,
 
-            }),
+  image: imageBase64,
+
+}),
 
           }
         );
@@ -217,15 +220,36 @@ export default function Home() {
   };
 
   /* IMAGE */
-  const handleImage = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+const handleImage = (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
 
-    const file =
-      e.target.files?.[0];
+  const file =
+    e.target.files?.[0];
 
-    if (!file) return;
+  if (!file) return;
 
+  const imageUrl =
+    URL.createObjectURL(file);
+
+  setPreview(imageUrl);
+
+  const reader =
+    new FileReader();
+
+  reader.onloadend = () => {
+
+    setImageBase64(
+      reader.result as string
+    );
+
+  };
+
+  reader.readAsDataURL(file);
+
+};
+
+reader.readAsDataURL(file);
     const maxSize =
       5 * 1024 * 1024;
 
