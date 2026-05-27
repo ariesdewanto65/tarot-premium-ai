@@ -1,10 +1,14 @@
-
+ 
 
 "use client";
 
 import { useState } from "react";
 
 export default function Home() {
+ const downloadPDF = () => {
+    window.print();
+  };
+
 
   /* MAJOR ARCANA */
   const majorArcana = [
@@ -392,20 +396,28 @@ reader.readAsDataURL(file);
           </div>
 
           {/* MENU */}
-          <div className="mt-8 text-center">
+           
+     <div className="mt-8 text-center flex items-center justify-center gap-6">
 
-            <button
-              onClick={handleReset}
-              className="underline text-yellow-300 hover:text-yellow-100 transition"
-            >
+        <button
+         onClick={handleReset}
+          className="underline text-yellow-300 hover:text-yellow-100 transition"
+        >
+         {language === "id"
+           ? "Menu Utama"
+            : "Main Menu"}
+         </button>
 
-              {language === "id"
-                ? "Menu Utama"
-                : "Main Menu"}
+  <button
+    onClick={downloadPDF}
+    className="underline text-yellow-300 hover:text-yellow-100 transition"
+  >
+    {language === "id"
+      ? "Unduh"
+      : "Download"}
+  </button>
 
-            </button>
-
-          </div>
+</div>
 
         </div>
 
