@@ -2,13 +2,26 @@
 
 "use client";
 
+
 import { useState } from "react";
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
 export default function Home() {
- const downloadPDF = () => {
+
+  const downloadPDF = () => {
     window.print();
   };
 
+  
+
+  /* MAJOR ARCANA */
 
   /* MAJOR ARCANA */
   const majorArcana = [
@@ -65,6 +78,45 @@ export default function Home() {
 
   const [reading, setReading] =
     useState("");
+   
+    const emotionData = [
+
+  {
+    name: "Sedih",
+    value:
+      reading.includes("sedih")
+        ? 40
+        : 20,
+  },
+
+  {
+    name: "Overthinking",
+    value:
+      reading.includes("cemas") ||
+      reading.includes("overthinking")
+        ? 35
+        : 15,
+  },
+
+  {
+    name: "Bingung",
+    value:
+      reading.includes("bingung") ||
+      reading.includes("ragu")
+        ? 30
+        : 10,
+  },
+
+  {
+    name: "Harapan",
+    value:
+      reading.includes("peluang") ||
+      reading.includes("awal baru")
+        ? 25
+        : 10,
+  },
+
+];
 
   const [shuffledDeck, setShuffledDeck] =
     useState<string[]>([]);
@@ -394,6 +446,77 @@ reader.readAsDataURL(file);
             {reading}
 
           </div>
+{/* EMOTION CHART */}
+<div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/40 p-6">
+
+  <h2 className="text-2xl text-center text-yellow-200 mb-6 font-bold">
+    Analisis Emosi
+  </h2>
+
+  <div className="w-full h-[320px]">
+
+    <ResponsiveContainer width="100%" height="100%">
+
+      <PieChart>
+
+        <Pie
+          data={emotionData}
+          dataKey="value"
+          nameKey="name"
+          outerRadius={110}
+          label
+        >
+
+          {emotionData.map((entry, index) => (
+
+            <Cell
+              key={`cell-${index}`}
+              fill={[
+                "#facc15",
+                "#fb7185",
+                "#60a5fa",
+                "#4ade80",
+              ][index % 4]}
+            />
+
+          ))}
+
+        </Pie>
+
+        <Tooltip />
+
+      </PieChart>
+
+    </ResponsiveContainer>
+
+  </div>
+
+  {/* LEGEND */}
+  <div className="mt-8 flex flex-col gap-3 text-sm text-yellow-100 ml-6">
+
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 rounded-full bg-yellow-400"></div>
+      <span>Sedih</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 rounded-full bg-pink-400"></div>
+      <span>Overthinking</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+      <span>Bingung</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 rounded-full bg-green-400"></div>
+      <span>Harapan</span>
+    </div>
+
+  </div>
+
+</div>
 
           {/* MENU */}
            
