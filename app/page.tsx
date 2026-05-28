@@ -82,41 +82,60 @@ export default function Home() {
   const [reading, setReading] =
     useState("");
    
-    const emotionData = [
+    const sedih =
+  (reading.match(
+    /sedih|lelah|kesepian|kehilangan|hampa/gi
+  ) || []).length;
+
+const overthinking =
+  (reading.match(
+    /cemas|takut|overthinking|khawatir|pikiran/gi
+  ) || []).length;
+
+const bingung =
+  (reading.match(
+    /bingung|ragu|bimbang|tidak yakin/gi
+  ) || []).length;
+
+const harapan =
+  (reading.match(
+    /peluang|awal baru|bangkit|tenang|berkembang/gi
+  ) || []).length;
+
+const total =
+  sedih +
+  overthinking +
+  bingung +
+  harapan || 1;
+
+const emotionData = [
 
   {
     name: "Sedih",
-    value:
-      reading.includes("sedih")
-        ? 40
-        : 20,
+    value: Math.round(
+      (sedih / total) * 100
+    ),
   },
 
   {
     name: "Overthinking",
-    value:
-      reading.includes("cemas") ||
-      reading.includes("overthinking")
-        ? 35
-        : 15,
+    value: Math.round(
+      (overthinking / total) * 100
+    ),
   },
 
   {
     name: "Bingung",
-    value:
-      reading.includes("bingung") ||
-      reading.includes("ragu")
-        ? 30
-        : 10,
+    value: Math.round(
+      (bingung / total) * 100
+    ),
   },
 
   {
     name: "Harapan",
-    value:
-      reading.includes("peluang") ||
-      reading.includes("awal baru")
-        ? 25
-        : 10,
+    value: Math.round(
+      (harapan / total) * 100
+    ),
   },
 
 ];
