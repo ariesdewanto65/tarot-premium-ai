@@ -473,7 +473,7 @@ reader.readAsDataURL(file);
     Analisis Emosi
   </h2>
 
-  <div className="w-full h-[320px]">
+  <div className="w-full h-[280px] md:h-[320px] px-4">
 
     <ResponsiveContainer width="100%" height="100%">
 
@@ -483,7 +483,7 @@ reader.readAsDataURL(file);
           data={emotionData}
           dataKey="value"
           nameKey="name"
-          outerRadius={110}
+          outerRadius={85}
           label
         >
 
