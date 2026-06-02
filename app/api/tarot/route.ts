@@ -320,12 +320,18 @@ Gunakan bahasa yang lebih natural, tenang, dan realistis.
 
   } catch (error) {
 
-    console.error(error);
+  console.log("MIDTRANS ERROR:");
+  console.log(error);
 
-    return Response.json({
-      success: false,
-      result:
-        "Terjadi kesalahan saat membaca tarot 😅",
-    });
+  return Response.json(
+    {
+      error,
+    },
+    {
+      status: 500,
+    }
+  );
+
+}
   }
-}                
+               

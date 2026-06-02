@@ -6,7 +6,7 @@
 "use client";
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   PieChart,
@@ -22,9 +22,86 @@ export default function Home() {
     window.print();
   };
 
-  
+ // ==================================================
+  // FITUR: State premium user
+  // FUNGSI:
+  // Menentukan apakah fitur premium sudah aktif atau belum.
+  // Nilai true hanya diberikan setelah pembayaran sukses.
+  // ==================================================
 
-  /* MAJOR ARCANA */
+  const [isPremium, setIsPremium] =
+  useState(false);
+// ==================================================
+  // FITUR: Pesan status pembayaran
+  // FUNGSI:
+  // Mengganti alert bawaan browser seperti "localhost:3000".
+  // Pesan payment gagal/sukses akan tampil rapi di halaman.
+  // ==================================================
+  const [paymentMessage, setPaymentMessage] =
+  useState("");
+
+// ==================================================
+// FITUR: Premium auto-check database saat halaman dibuka
+// STATUS: OFF SEMENTARA UNTUK DEMO
+// ALASAN:
+// Saat halaman pertama dibuka, tombol langsung Premium Aktif
+// karena user test di database sudah isPremium true.
+// Untuk demo, premium harus false dulu dan baru aktif setelah bayar.
+// =====
+
+/*  useEffect(() => {
+  const checkPremiumFromDatabase = async () => {
+    try {
+      const response = await fetch("/api/tarot/check-premium", {
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      console.log("CHECK PREMIUM DATABASE:", data);
+
+      if (data?.isPremium === true) {
+        console.log("PREMIUM AKTIF DARI DATABASE");
+
+        setIsPremium(true);
+        localStorage.setItem("premium", "true");
+
+        return;
+      }
+
+      console.log("PREMIUM BELUM AKTIF DI DATABASE");
+
+      setIsPremium(false);
+      localStorage.removeItem("premium");
+    } catch (error) {
+      console.log("CHECK PREMIUM DATABASE ERROR:", error);
+
+      const premium = localStorage.getItem("premium");
+
+      if (premium === "true") {
+        setIsPremium(true);
+      }
+    }
+  };
+
+  checkPremiumFromDatabase();
+}, []);
+  
+*/
+
+// ==================================================
+// FITUR: Premium demo mode
+// STATUS: AKTIF
+// FUNGSI:
+// Saat halaman pertama dibuka, premium selalu false.
+// Premium baru aktif setelah pembayaran sukses.
+// ==================================================
+
+useEffect(() => {
+  setIsPremium(false);
+  localStorage.removeItem("premium");
+}, []);
+
 
   /* MAJOR ARCANA */
   const majorArcana = [
@@ -60,7 +137,7 @@ export default function Home() {
   ];
 
   const [question, setQuestion] =
-    useState("");
+  useState<string>("");
 
   const [preview, setPreview] =
     useState<string | null>(null);
@@ -80,7 +157,7 @@ export default function Home() {
     useState(false);
 
   const [reading, setReading] =
-    useState("");
+    useState("false");
    
     const sedih =
   (reading.match(
@@ -145,6 +222,7 @@ const emotionData = [
 
   const [selectedCards, setSelectedCards] =
     useState<string[]>([]);
+
 
   const [replaceIndex, setReplaceIndex] =
     useState(0);
@@ -396,8 +474,185 @@ reader.readAsDataURL(file);
 
   };
 
-  return (
 
+  
+const handlePayment = async () => {
+  console.log("STEP 1");
+
+  try {
+    const response = await fetch("/api/tarot/create-transaction", {
+      method: "POST",
+    });
+
+    const text = await response.text();
+
+    console.log("CREATE TRANSACTION STATUS:", response.status);
+    console.log("CREATE TRANSACTION RAW RESPONSE:", text);
+
+    if (!response.ok) {
+      alert("Create transaction gagal. Status: " + response.status);
+      return;
+    }
+
+    if (!text) {
+      alert("Response create transaction kosong");
+      return;
+    }
+
+    const data = JSON.parse(text);
+
+    console.log("TOKEN:", data);
+
+    if (!data.orderId) {
+      console.log("ORDER ID TIDAK ADA DARI CREATE TRANSACTION:", data);
+      alert("Order ID tidak dibuat");
+      return;
+    }
+
+    if (!data.token) {
+      console.log("TOKEN TIDAK ADA DARI CREATE TRANSACTION:", data);
+      alert("Token Midtrans tidak dibuat");
+      return;
+    }
+
+    localStorage.removeItem("orderId");
+    localStorage.setItem("orderId", data.orderId);
+
+    console.log("ORDER ID DISIMPAN:", data.orderId);
+
+    // @ts-ignore
+    console.log("SNAP EXISTS:", window.snap);
+
+    // @ts-ignore
+    if (!window.snap) {
+      alert("Snap Midtrans belum tersedia");
+      return;
+    }
+
+    // @ts-ignore
+    window.snap.pay(data.token, {
+      onSuccess: async function (result: any) {
+       console.log("STEP 5 SUCCESS", result);
+
+       const savedOrderId = localStorage.getItem("orderId");
+
+      if (!savedOrderId) {
+        alert("Order ID tidak ditemukan untuk aktivasi premium.");
+        return;
+       }
+
+        const activateResponse = await fetch("/api/tarot/activate-premium", {
+           method: "POST",
+            headers: {
+             "Content-Type": "application/json",
+             },
+             body: JSON.stringify({
+              orderId: savedOrderId,
+            }),
+         });
+
+  const activateData = await activateResponse.json();
+
+  console.log("ACTIVATE PREMIUM:", activateData);
+
+   if (!activateData.success) {
+    alert("Payment sukses, tapi aktivasi database gagal.");
+    return;
+   }
+
+     localStorage.setItem("premium", "true");
+
+       alert("Premium berhasil diaktifkan!");
+
+       location.reload();
+    },
+
+      onPending: function (result: any) {
+        console.log("PENDING", result);
+      },
+
+      onError: function (result: any) {
+        console.log("ERROR", result);
+      },
+
+      onClose: function () {
+        console.log("Popup ditutup");
+      },
+    });
+  } catch (error) {
+    console.log("HANDLE PAYMENT ERROR:", error);
+
+    // ==================================================
+// FITUR: Alert bawaan browser untuk payment gagal
+// STATUS: OFF UNTUK DEMO
+// ALASAN:
+// Alert bawaan browser menampilkan localhost:3000,
+// kurang rapi untuk demo user.
+// ==================================================
+
+   // alert("Payment gagal");
+
+   // alert("Payment berhasil");
+
+  setPaymentMessage(
+  "Pembayaran berhasil. Premium kamu sudah aktif."
+   );
+   
+   setPaymentMessage(
+  "Pembayaran belum berhasil. Silakan coba lagi atau lanjutkan pembayaran."
+);
+  }
+};
+
+const checkPayment = async (manualOrderId?: string) => {
+  const orderId = manualOrderId || localStorage.getItem("orderId");
+
+  if (!orderId) {
+    alert("Order ID tidak ditemukan");
+    return null;
+  }
+
+  try {
+    const response = await fetch("/api/tarot/check-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId,
+      }),
+    });
+
+    const data = await response.json();
+
+    console.log("CHECK PAYMENT:", data);
+
+    const status =
+      data?.transaction_status ||
+      data?.raw?.transaction_status;
+
+    console.log("STATUS FINAL:", status);
+
+    if (status === "settlement" || status === "capture") {
+      localStorage.setItem("premium", "true");
+      alert("Premium Aktif!");
+      location.reload();
+      return data;
+    }
+
+    alert("Status: " + status);
+    return data;
+  } catch (error) {
+    console.error("CHECK PAYMENT ERROR:", error);
+    alert("Gagal cek status pembayaran");
+    return null;
+  }
+};
+
+
+return (
+
+    
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-green-950 via-green-900 to-black flex items-center justify-center px-4 py-10 text-yellow-300">
 
      {/* LOADING */}
@@ -473,6 +728,7 @@ reader.readAsDataURL(file);
     Analisis Emosi
   </h2>
 
+
   <div className="w-full h-[280px] md:h-[320px] px-4">
 
     <ResponsiveContainer width="100%" height="100%">
@@ -510,6 +766,51 @@ reader.readAsDataURL(file);
     </ResponsiveContainer>
 
   </div>
+    
+ {!isPremium ? (
+
+  <div className="relative z-[9999] pointer-events-auto flex flex-col items-center gap-3 mt-10">
+
+    <button
+      type="button"
+      disabled
+      className="bg-yellow-500/40 text-black/50 px-6 py-4 rounded-xl font-bold cursor-not-allowed"
+    >
+      🔒 Premium Terkunci
+    </button>
+
+    <button
+      type="button"
+      onClick={handlePayment}
+      className="relative z-[9999] pointer-events-auto underline text-yellow-300 hover:text-yellow-100 font-bold"
+    >
+      Lanjutkan
+    </button>
+
+   <button
+  type="button"
+  onClick={() => checkPayment()}
+  className="relative z-[9999] pointer-events-auto underline text-green-300"
+>
+  Cek Pembayaran
+</button>
+
+  </div>
+
+) : (
+
+  <div className="flex justify-center mt-10">
+   
+    <button
+      type="button"
+      className="bg-green-500 text-black px-6 py-4 rounded-xl font-bold"
+    >
+      ✅ Premium Aktif
+    </button>
+
+  </div>
+
+)}
 
   {/* LEGEND */}
   <div className="mt-8 flex flex-col gap-3 text-sm text-yellow-100 ml-6">
@@ -885,12 +1186,76 @@ reader.readAsDataURL(file);
 
           )}
 
+<div className="mt-6 flex flex-col items-center gap-3">
+  {!isPremium ? (
+    <>
+      <button
+        type="button"
+        disabled
+        className="bg-yellow-500/40 text-black/50 px-6 py-4 rounded-xl font-bold cursor-not-allowed"
+      >
+        🔒 Premium Terkunci
+      </button>
+
+      <button
+        type="button"
+        onClick={handlePayment}
+        className="underline text-yellow-300 hover:text-yellow-100 font-bold"
+      >
+        Lanjutkan Pembayaran
+      </button>
+
+{/* ==================================================
+    FITUR: Pesan status pembayaran
+    FUNGSI:
+    Menampilkan pesan payment gagal/sukses di halaman,
+    menggantikan alert browser bawaan.
+================================================== */}
+
+{paymentMessage && (
+  <div className="mt-4 rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-center text-sm text-yellow-200">
+    {paymentMessage}
+  </div>
+)}
+
+      <button
+        type="button"
+        onClick={() => checkPayment()}
+        className="relative z-[9999] pointer-events-auto underline text-green-300"
+      >
+        Cek Pembayaran
+      </button>
+    </>
+  ) : (
+    <div className="flex flex-col items-center gap-4">
+      <button
+        type="button"
+        className="bg-green-500 text-black px-6 py-4 rounded-xl font-bold"
+      >
+        ✅ Premium Aktif
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          localStorage.removeItem("premium");
+          localStorage.removeItem("orderId");
+          setIsPremium(false);
+          alert("Premium di-reset untuk testing.");
+        }}
+        className="text-sm underline text-red-300 hover:text-red-200"
+      >
+        Reset Premium Testing
+      </button>
+    </div>
+  )}
+</div>
+
         </div>
 
       )}
 
     </main>
 
-  );
-
+ );
 }
