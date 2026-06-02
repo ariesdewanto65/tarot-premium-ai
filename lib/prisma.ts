@@ -1,28 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
-const connectionString = process.env.DIRECT_URL;
-
-console.log(
-  "PRISMA RUNTIME URL:",
-  connectionString ? "DIRECT_URL ADA" : "DIRECT_URL KOSONG"
-);
-
-if (connectionString) {
-  const safeUrl = new URL(connectionString);
-
-  console.log("PRISMA HOST:", safeUrl.hostname);
-  console.log("PRISMA PORT:", safeUrl.port);
-  console.log("PRISMA USER:", safeUrl.username);
-}
+const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DIRECT_URL tidak ditemukan");
+  throw new Error("DATABASE_URL belum tersedia");
 }
 
-const adapter = new PrismaPg({
+const pool = new Pool({
   connectionString,
 });
+
+const adapter = new PrismaPg(pool);
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
