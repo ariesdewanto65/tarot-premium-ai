@@ -48,7 +48,7 @@ await prisma.payment.create({
 const parameter = {
   transaction_details: {
     order_id: orderId,
-    gross_amount: 15000,
+     gross_amount: 59900,
   },
   
      

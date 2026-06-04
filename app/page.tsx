@@ -159,23 +159,26 @@ useEffect(() => {
   const [reading, setReading] =
     useState("false");
    
-    const sedih =
-  (reading.match(
+   const safeReading =
+  reading || "";
+
+const sedih =
+  (safeReading.match(
     /sedih|lelah|kesepian|kehilangan|hampa/gi
   ) || []).length;
 
 const overthinking =
-  (reading.match(
+  (safeReading.match(
     /cemas|takut|overthinking|khawatir|pikiran/gi
   ) || []).length;
 
 const bingung =
-  (reading.match(
+  (safeReading.match(
     /bingung|ragu|bimbang|tidak yakin/gi
   ) || []).length;
 
 const harapan =
-  (reading.match(
+  (safeReading.match(
     /peluang|awal baru|bangkit|tenang|berkembang/gi
   ) || []).length;
 
@@ -357,14 +360,30 @@ const emotionData = [
           }
         );
 
-      const data =
-        await response.json();
+     const data =
+  await response.json();
 
-      setReading(data.result);
+console.log("TAROT API RESPONSE:", data);
 
-      setLoading(false);
+const finalReading =
+  data?.result ||
+  data?.reading ||
+  data?.message ||
+  "";
 
-      setShowResult(true);
+console.log("FINAL READING:", finalReading);
+
+if (!finalReading) {
+  setReading(
+    "Maaf, hasil pembacaan belum berhasil dibuat. Silakan coba ulangi pembacaan."
+  );
+} else {
+  setReading(finalReading);
+}
+
+setLoading(false);
+
+setShowResult(true);
 
     } catch (error) {
 
@@ -655,6 +674,14 @@ return (
     
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-green-950 via-green-900 to-black flex items-center justify-center px-4 py-10 text-yellow-300">
 
+{!loading && (
+  <a
+    href="/premium"
+    className="fixed right-6 top-6 z-[9999] rounded-2xl border border-yellow-400 bg-black/80 px-5 py-3 text-sm font-bold text-yellow-300 shadow-[0_0_30px_rgba(250,204,21,0.35)] hover:bg-yellow-400/10"
+  >
+     Upgrade Premium
+  </a>
+)}
      {/* LOADING */}
 {loading && (
 
@@ -1055,8 +1082,17 @@ return (
               THE CHARIOT
 
             </h1>
-
           </div>
+      {/*      
+        <div className="mt-5 text-center">
+          <a
+                   href="/premium"
+                 className="inline-block rounded-2xl border border-yellow-400 px-6 py-3 font-bold text-yellow-300 hover:bg-yellow-400/10"
+                       >
+                Buka Premium
+                  </a>
+            </div>
+        */}
 
           {/* LANGUAGE */}
           <div className="mb-6">
@@ -1185,25 +1221,49 @@ return (
             </button>
 
           )}
-
-<div className="mt-6 flex flex-col items-center gap-3">
+ 
+   <div className="mt-6 flex flex-col items-center gap-3">
   {!isPremium ? (
-    <>
-      <button
-        type="button"
-        disabled
-        className="bg-yellow-500/40 text-black/50 px-6 py-4 rounded-xl font-bold cursor-not-allowed"
-      >
-        🔒 Premium Terkunci
-      </button>
+  <>
+    <a
+      href="/premium"
+      className="rounded-xl border border-yellow-400 px-6 py-3 font-bold text-yellow-300 hover:bg-yellow-400/10"
+    >
+      Lihat Paket Premium
+    </a>
 
-      <button
-        type="button"
-        onClick={handlePayment}
-        className="underline text-yellow-300 hover:text-yellow-100 font-bold"
-      >
-        Lanjutkan Pembayaran
-      </button>
+    {/*
+    FLOW PREMIUM LAMA — DISIMPAN SEBAGAI CATATAN, JANGAN DIHAPUS:
+
+    Tombol Premium Terkunci:
+    Sebelumnya dipakai sebagai indikator bahwa user belum premium.
+
+    Tombol Lanjutkan Pembayaran:
+    Sebelumnya dipakai untuk membuka Midtrans langsung dari homepage.
+
+    Flow lama:
+    Homepage → Lanjutkan Pembayaran → Popup Midtrans → Cek Pembayaran
+
+    Flow baru:
+    Homepage → Lihat Paket Premium → /premium → Lanjutkan Pembayaran / Cek Status Premium
+
+    <button
+      type="button"
+      disabled
+      className="bg-yellow-500/40 text-black/50 px-6 py-4 rounded-xl font-bold cursor-not-allowed"
+    >
+      🔒 Premium Terkunci
+    </button>
+
+    <button
+      type="button"
+      onClick={handlePayment}
+      className="underline text-yellow-300 hover:text-yellow-100 font-bold"
+    >
+      Lanjutkan Pembayaran
+    </button>
+    */}
+     
 
 {/* ==================================================
     FITUR: Pesan status pembayaran
@@ -1218,13 +1278,22 @@ return (
   </div>
 )}
 
-      <button
-        type="button"
-        onClick={() => checkPayment()}
-        className="relative z-[9999] pointer-events-auto underline text-green-300"
-      >
-        Cek Pembayaran
-      </button>
+      {/*
+FLOW LAMA — CEK PEMBAYARAN HOMEPAGE
+
+Tombol ini dulu dipakai untuk mengecek pembayaran langsung dari homepage.
+Sekarang cek status premium dipusatkan di halaman /premium,
+supaya user tidak bingung.
+
+<button
+  type="button"
+  onClick={checkPayment}
+  className="underline text-green-300 hover:text-green-100 font-bold"
+>
+  Cek Pembayaran
+</button>
+*/}
+
     </>
   ) : (
     <div className="flex flex-col items-center gap-4">
@@ -1251,7 +1320,7 @@ return (
   )}
 </div>
 
-        </div>
+</div>        
 
       )}
 

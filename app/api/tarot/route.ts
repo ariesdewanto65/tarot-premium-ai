@@ -1,27 +1,288 @@
 
 
 import OpenAI from "openai";
+//import { prisma } from "@/lib/prisma";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// =====================================================
+// GPT MODEL SELECTOR
+// =====================================================
 
+const GPT_MODEL = {
+  FREE: "gpt-5.4-mini",
+  PREMIUM_TAROT: "gpt-5.5",
+  PREMIUM_FENGSHUI: "gpt-5.5",
+} as const;
+
+type PremiumServiceType =
+  | "tarot"
+  | "fengshui";
+
+function getGPTModel({
+  isPremium,
+  serviceType,
+}: {
+  isPremium: boolean;
+  serviceType: PremiumServiceType;
+}) {
+  if (!isPremium) {
+    return GPT_MODEL.FREE;
+  }
+
+  if (serviceType === "tarot") {
+    return GPT_MODEL.PREMIUM_TAROT;
+  }
+
+  if (serviceType === "fengshui") {
+    return GPT_MODEL.PREMIUM_FENGSHUI;
+  }
+
+  return GPT_MODEL.FREE;
+}
+
+// =====================================================
+// PREMIUM STATUS CHECKER
+// =====================================================
+
+/*async function checkPremiumFromDatabase(userEmail: string) {
+  const premiumPayment =
+    await prisma.payment.findFirst({
+      where: {
+        userEmail,
+        status: {
+          in: [
+            "settlement",
+            "capture",
+          ],
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+  const isPremium =
+    Boolean(premiumPayment);
+
+  return isPremium;
+}    */
 export async function POST(req: Request) {
 
   try {
 
-    const body = await req.json();
-   const image =
-    body.image || null;
-    const question = body.question || "";
+   const body = await req.json();
 
-    const cards: string[] =
-    body.cards || [];
+const image =
+  body.image || null;
 
-   const cardNames = cards;
+const question =
+  body.question || "";
+
+const cards: string[] =
+  body.cards || [];
+
+const cardNames = cards;
+
+
+
+// ===============================
+// TEST OPENAI MINIMAL
+// ===============================
 
 const systemPrompt = `
+Kamu adalah THE CHARIOT Tarot AI, pembaca tarot premium yang mistis, emosional, intuitif, dan personal.
+
+GAYA PEMBACAAN:
+- Gunakan bahasa Indonesia yang natural, hangat, dalam, dan tidak kaku.
+- Jawaban harus terasa seperti pembaca tarot manusia premium, bukan seperti AI formal.
+- Buat pembacaan yang panjang, rapi, personal, dan menyentuh.
+- Jangan menjawab terlalu pendek.
+- Jangan hanya memberi ringkasan umum.
+- Jelaskan setiap kartu satu per satu.
+- Hubungkan makna kartu dengan pertanyaan user.
+- Jangan mengklaim masa depan secara pasti.
+- Jangan memberi diagnosis medis, hukum, atau finansial mutlak.
+- Untuk masa depan, gunakan bahasa seperti: potensi, kecenderungan, arah energi, atau kemungkinan.
+
+FORMAT JAWABAN WAJIB:
+
+# PEMBUKA ENERGI
+Jelaskan suasana energi utama dari kombinasi 3 kartu yang muncul.
+
+# KARTU 1 — AKAR ENERGI / SUMBER MASALAH
+Jelaskan kartu pertama secara mendalam: makna utama, hubungan dengan kondisi user, emosi tersembunyi, dan pesan batinnya.
+
+# KARTU 2 — SITUASI SAAT INI
+Jelaskan kartu kedua sebagai kondisi yang sedang terjadi sekarang: dinamika aktif, konflik, perasaan user, dan hal yang mungkin belum disadari.
+
+# KARTU 3 — ARAH ENERGI / POTENSI HASIL
+Jelaskan kartu ketiga sebagai arah energi ke depan: potensi perkembangan, peluang positif, risiko yang perlu dijaga, dan sikap terbaik.
+
+# KEKUATAN TERSEMBUNYI USER
+Jelaskan kekuatan batin user berdasarkan kombinasi kartu.
+
+# TANTANGAN YANG PERLU DIWASPADAI
+Jelaskan hambatan emosional, pola pikir, atau situasi yang bisa mengganggu perjalanan user.
+
+# SARAN PRAKTIS
+Berikan 3 sampai 5 saran nyata yang bisa dilakukan user. Gunakan format poin bernomor.
+
+# PESAN INTUITIF
+Berikan pesan spiritual yang lembut, emosional, tenang, dan reflektif.
+
+# KESIMPULAN
+Tutup dengan rangkuman yang kuat, hangat, dan memberi rasa arah.
+
+PANJANG JAWABAN:
+- Minimal 900 kata.
+- Maksimal 1400 kata.
+- Jangan jawab pendek.
+`;
+
+const testAiResponse =
+  await openai.chat.completions.create({
+    model: "gpt-5.4-mini",
+    messages: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: `
+Pertanyaan user:
+${question}
+
+Kartu yang dipilih:
+${cardNames.join(", ")}
+
+Buat pembacaan tarot lengkap, panjang, personal, dan mendalam sesuai format wajib.
+Jelaskan setiap kartu satu per satu.
+Jangan hanya memberi ringkasan pendek.
+`,
+      },
+    ],
+    temperature: 0.85,
+    max_completion_tokens: 2600,
+  });
+
+const testReading =
+  testAiResponse.choices[0]?.message?.content || "";
+
+console.log("TEST AI RESPONSE:", testAiResponse);
+console.log("TEST READING:", testReading);
+
+return Response.json({
+  success: true,
+  result: testReading || "TEST OPENAI KOSONG",
+  cards: cardNames,
+});
+
+const aiResponse =
+  await openai.chat.completions.create({
+    model: "gpt-5.4-mini",
+    messages: [
+      {
+        role: "system",
+        content:
+          "Kamu adalah pembaca tarot. Jawab dalam bahasa Indonesia.",
+      },
+      {
+        role: "user",
+        content: `Buat pembacaan tarot singkat untuk kartu: ${cardNames.join(", ")}`,
+      },
+    ],
+    temperature: 0.8,
+    //max_tokens: 700,
+    max_completion_tokens: 700,
+  });
+
+const result =
+  aiResponse.choices[0]?.message?.content || "";
+
+console.log("TAROT RESULT:", result);
+
+return Response.json({
+  success: true,
+  result,
+  cards: cardNames,
+});
+
+// ===============================
+// PREMIUM + GPT MODEL CHECK
+// ===============================
+
+/*const userEmail =
+  body.userEmail ||
+  "test-user@tarot-premium.local";
+
+const serviceType: PremiumServiceType =
+  body.serviceType || "tarot";
+
+const isPremium =
+  await checkPremiumFromDatabase(userEmail);
+
+const model = getGPTModel({
+  isPremium,
+  serviceType,
+});
+
+console.log("TAROT USER:", userEmail);
+console.log("SERVICE TYPE:", serviceType);
+console.log("IS PREMIUM:", isPremium);
+console.log("GPT MODEL:", model);
+ */
+
+// ===============================
+// PREMIUM + GPT MODEL CHECK
+// SEMENTARA DIMATIKAN DULU BIAR READING NORMAL
+// ===============================
+
+/*
+const userEmail =
+  body.userEmail ||
+  "test-user@tarot-premium.local";
+
+const serviceType: PremiumServiceType =
+  body.serviceType || "tarot";
+
+const isPremium =
+  await checkPremiumFromDatabase(userEmail);
+
+const model = getGPTModel({
+  isPremium,
+  serviceType,
+});
+
+console.log("TAROT USER:", userEmail);
+console.log("SERVICE TYPE:", serviceType);
+console.log("IS PREMIUM:", isPremium);
+console.log("GPT MODEL:", model);
+*/
+
+const userEmail =
+  "test-user@tarot-premium.local";
+
+const serviceType: PremiumServiceType =
+  "tarot";
+
+const isPremium =
+  false;
+
+const model =
+  "gpt-5.4-mini";
+
+console.log("TAROT USER:", userEmail);
+console.log("SERVICE TYPE:", serviceType);
+console.log("IS PREMIUM:", isPremium);
+console.log("GPT MODEL:", model);
+
+
+
+/*const systemPrompt = `
 Kamu adalah THE CHARIOT Tarot AI.
 
 Style:
@@ -73,13 +334,12 @@ Tambahkan:
 
 Gunakan gaya intimate dan immersive.
 `;
-
+*/
     
 
     const response =
       await openai.chat.completions.create({
-
-        model: "gpt-4o-mini",
+    model: "gpt-5.4-mini",
 
        messages: [
   {
@@ -306,32 +566,87 @@ Gunakan bahasa yang lebih natural, tenang, dan realistis.
 
         temperature: 1,
 
-        max_tokens: 1400,
+        //max_tokens: 1400,
+        max_completion_tokens: 1400,
       });
 
-    const result =
+   // TARUH DI SINI BRO, SETELAH BLOK OPENAI SELESAI
+const testResult =
+  response.choices[0]?.message?.content || "";
+
+console.log("TAROT RESULT:", result);
+
+if (!result) {
+  return Response.json(
+    {
+      success: false,
+      error: "OpenAI tidak mengembalikan hasil pembacaan.",
+      cards: cardNames,
+    },
+    {
+      status: 500,
+    }
+  );
+}
+
+return Response.json({
+  success: true,
+  result,
+  cards: cardNames,
+}); 
+
+
+  /*  const result =
       response.choices[0].message.content;
 
     return Response.json({
       success: true,
       result,
       cards: cardNames,
-    });
+    }); */
 
-  } catch (error) {
+   //const result =
+  //response.choices[0]?.message?.content || "";
 
-  console.log("MIDTRANS ERROR:");
-  console.log(error);
+console.log("TAROT RESULT:", result);
 
+if (!result) {
   return Response.json(
     {
-      error,
+      success: false,
+      error: "OpenAI tidak mengembalikan hasil pembacaan.",
     },
     {
       status: 500,
     }
   );
+}
 
+return Response.json({
+  success: true,
+  result,
+  cards: cardNames,
+});
+
+
+ 
+  //console.log("MIDTRANS ERROR:");
+} catch (error) {
+  console.log("TAROT ERROR:");
+  console.log(error);
+
+  return Response.json(
+    {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal membuat pembacaan tarot.",
+    },
+    {
+      status: 500,
+    }
+  );
 }
   }
                
