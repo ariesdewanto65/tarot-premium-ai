@@ -36,11 +36,13 @@ await prisma.user.upsert({
   },
 });
 
+const amount = 59900;
+
 await prisma.payment.create({
   data: {
     orderId,
     userEmail,
-    amount: 15000,
+    amount ,
     status: "pending",
   },
 });
@@ -48,7 +50,7 @@ await prisma.payment.create({
 const parameter = {
   transaction_details: {
     order_id: orderId,
-     gross_amount: 59900,
+     gross_amount: amount,
   },
   
      
