@@ -842,7 +842,7 @@ return (
 )}
 
   {/* LEGEND */}
-  <div className="mt-8 flex flex-col gap-3 text-sm text-yellow-100 ml-6">
+ {/*} <div className="mt-8 flex flex-col gap-3 text-sm text-yellow-100 ml-6">
 
     <div className="flex items-center gap-2">
       <div className="w-4 h-4 rounded-full bg-yellow-400"></div>
@@ -864,9 +864,9 @@ return (
       <span>Harapan</span>
     </div>
 
-  </div>
+  </div>  */}
 
-</div>
+</div> 
 
           {/* MENU */}
            
