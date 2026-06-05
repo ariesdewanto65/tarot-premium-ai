@@ -28,6 +28,11 @@ model Payment {
   transactionId   String?
   fraudStatus     String?
   rawNotification Json?
+   
+  serviceType     String?
+  usageStatus     String   @default("unused")
+  usedAt          DateTime?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

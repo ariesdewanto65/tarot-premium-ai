@@ -13,6 +13,7 @@ import {
   Pie,
   Cell,
   Tooltip,
+   Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -756,43 +757,44 @@ return (
   </h2>
 
 
-  <div className="w-full h-[280px] md:h-[320px] px-4">
+{reading && (
+  <section className="mb-8 rounded-[2rem] border border-yellow-500/30 bg-black/35 p-6 md:p-10 shadow-[0_0_40px_rgba(0,0,0,0.4)]">
+    <h2 className="mb-6 text-center text-3xl font-bold text-yellow-300">
+      Analisis Emosi
+    </h2>
 
-    <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full min-w-0">
+      <ResponsiveContainer width="100%" height={320}>
+        <PieChart>
+          <Pie
+            data={emotionData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={85}
+            label
+          >
+            {emotionData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={[
+                  "#facc15",
+                  "#fb7185",
+                  "#60a5fa",
+                  "#4ade80",
+                ][index % 4]}
+              />
+            ))}
+          </Pie>
 
-      <PieChart>
-
-        <Pie
-          data={emotionData}
-          dataKey="value"
-          nameKey="name"
-          outerRadius={85}
-          label
-        >
-
-          {emotionData.map((entry, index) => (
-
-            <Cell
-              key={`cell-${index}`}
-              fill={[
-                "#facc15",
-                "#fb7185",
-                "#60a5fa",
-                "#4ade80",
-              ][index % 4]}
-            />
-
-          ))}
-
-        </Pie>
-
-        <Tooltip />
-
-      </PieChart>
-
-    </ResponsiveContainer>
-
-  </div>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  </section>
+)}
     
  {!isPremium ? (
 
