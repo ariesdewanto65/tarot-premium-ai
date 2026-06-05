@@ -19,8 +19,10 @@ import {
 
 export default function Home() {
 
+  
   const downloadPDF = () => {
     window.print();
+    
   };
 
  // ==================================================
@@ -145,8 +147,8 @@ useEffect(() => {
     const [imageBase64, setImageBase64] =
 
   useState<string | null>(null);
-  const [language, setLanguage] =
-    useState("id");
+     const [language, setLanguage] =
+     useState<"id" | "en">("id");
 
   const [loading, setLoading] =
     useState(false);
@@ -348,12 +350,9 @@ const emotionData = [
             },
 
             body: JSON.stringify({
-
-              question,
-
+             question,
               cards:
                 selectedCards,
-
               language,
             image: imageBase64,
             }),
@@ -752,10 +751,10 @@ return (
 {/* EMOTION CHART */}
 <div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/40 p-6">
 
-  <h2 className="text-2xl text-center text-yellow-200 mb-6 font-bold">
-    Analisis Emosi
+  {/*<h2 className="text-2xl text-center text-yellow-200 mb-6 font-bold">
+   Analisis Emosi
   </h2>
-
+   */}
 
 {reading && (
   <section className="mb-8 rounded-[2rem] border border-yellow-500/30 bg-black/35 p-6 md:p-10 shadow-[0_0_40px_rgba(0,0,0,0.4)]">
@@ -862,7 +861,7 @@ return (
     <div className="flex items-center gap-2">
       <div className="w-4 h-4 rounded-full bg-green-400"></div>
       <span>Harapan</span>
-    </div>
+    </div>taskkill /F /IM node.exe
 
   </div>  */}
 
@@ -1096,36 +1095,43 @@ return (
             </div>
         */}
 
-          {/* LANGUAGE */}
-          <div className="mb-6">
+{/* LANGUAGE SELECTOR */}
 
-            <label className="block text-yellow-200 mb-2">
+<div className="mb-6">
+  
+<div className="mb-6">
+  <label className="block text-sm md:text-base text-yellow-300 mb-3 font-semibold">
+    Pilih Bahasa
+  </label>
 
-              Language
+  <div className="flex gap-3 flex-wrap">
+    <button
+      type="button"
+      onClick={() => setLanguage("id")}
+      className={`px-4 py-3 rounded-xl border-2 text-base md:text-lg font-bold transition-all duration-300 ${
+        language === "id"
+          ? "border-yellow-400 bg-yellow-500 text-black shadow-[0_0_22px_rgba(255,215,0,0.55)] scale-105"
+          : "border-yellow-700 bg-[#021f12] text-yellow-400 hover:border-yellow-400 hover:shadow-[0_0_16px_rgba(255,215,0,0.3)]"
+      }`}
+    >
+      🇮🇩 INA
+    </button>
 
-            </label>
-
-            <select
-              value={language}
-              onChange={(e) =>
-                setLanguage(
-                  e.target.value
-                )
-              }
-              className="w-full rounded-2xl border border-yellow-500/30 bg-black/30 p-4 text-yellow-100"
-            >
-
-              <option value="id">
-                Bahasa Indonesia
-              </option>
-
-              <option value="en">
-                English
-              </option>
-
-            </select>
-
-          </div>
+    <button
+      type="button"
+      onClick={() => setLanguage("en")}
+      className={`px-4 py-3 rounded-xl border-2 text-base md:text-lg font-bold transition-all duration-300 ${
+        language === "en"
+          ? "border-yellow-400 bg-yellow-500 text-black shadow-[0_0_22px_rgba(255,215,0,0.55)] scale-105"
+          : "border-yellow-700 bg-[#021f12] text-yellow-400 hover:border-yellow-400 hover:shadow-[0_0_16px_rgba(255,215,0,0.3)]"
+      }`}
+    >
+      🇬🇧 ENG
+    </button>
+  </div>
+</div>
+  
+</div>
 
           {/* PHOTO */}
           <div className="mb-6">
