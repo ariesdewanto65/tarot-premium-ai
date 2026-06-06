@@ -166,24 +166,24 @@ useEffect(() => {
   reading || "";
 
 const sedih =
-  (safeReading.match(
-    /sedih|lelah|kesepian|kehilangan|hampa/gi
-  ) || []).length;
+  ((safeReading.match(
+    /sedih|lelah|kesepian|kehilangan|hampa|luka|terluka|kecewa|sad|sadness|tired|lonely|loss|empty|hurt|pain|wounded|grief|heartbroken|heavy/gi
+  ) || []).length) + 1;
 
 const overthinking =
-  (safeReading.match(
-    /cemas|takut|overthinking|khawatir|pikiran/gi
-  ) || []).length;
+  ((safeReading.match(
+    /cemas|takut|overthinking|khawatir|pikiran|gelisah|anxious|anxiety|fear|afraid|worry|worried|restless|thinking too much|mental noise/gi
+  ) || []).length) + 1;
 
 const bingung =
-  (safeReading.match(
-    /bingung|ragu|bimbang|tidak yakin/gi
-  ) || []).length;
+  ((safeReading.match(
+    /bingung|ragu|bimbang|tidak yakin|tidak jelas|kabur|confused|confusion|doubt|uncertain|unsure|unclear|lost|hesitant/gi
+  ) || []).length) + 1;
 
 const harapan =
-  (safeReading.match(
-    /peluang|awal baru|bangkit|tenang|berkembang/gi
-  ) || []).length;
+  ((safeReading.match(
+    /peluang|awal baru|bangkit|tenang|berkembang|pulih|sembuh|harapan|hope|hopeful|opportunity|new beginning|rise again|calm|grow|growth|healing|recover|renewal|progress|light|better/gi
+  ) || []).length) + 1;
 
 const total =
   sedih +
@@ -192,36 +192,24 @@ const total =
   harapan || 1;
 
 const emotionData = [
-
   {
-    name: "Sedih",
-    value: Math.round(
-      (sedih / total) * 100
-    ),
+    name: language === "id" ? "Sedih" : "Sad",
+    value: Math.round((sedih / total) * 100),
   },
-
   {
     name: "Overthinking",
-    value: Math.round(
-      (overthinking / total) * 100
-    ),
+    value: Math.round((overthinking / total) * 100),
   },
-
   {
-    name: "Bingung",
-    value: Math.round(
-      (bingung / total) * 100
-    ),
+    name: language === "id" ? "Bingung" : "Confused",
+    value: Math.round((bingung / total) * 100),
   },
-
   {
-    name: "Harapan",
-    value: Math.round(
-      (harapan / total) * 100
-    ),
+    name: language === "id" ? "Harapan" : "Hope",
+    value: Math.round((harapan / total) * 100),
   },
-
 ];
+
 
   const [shuffledDeck, setShuffledDeck] =
     useState<string[]>([]);
@@ -751,16 +739,12 @@ return (
 {/* EMOTION CHART */}
 <div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/40 p-6">
 
-  {/*<h2 className="text-2xl text-center text-yellow-200 mb-6 font-bold">
-   Analisis Emosi
-  </h2>
-   */}
-
-{reading && (
+  {reading && (
   <section className="mb-8 rounded-[2rem] border border-yellow-500/30 bg-black/35 p-6 md:p-10 shadow-[0_0_40px_rgba(0,0,0,0.4)]">
-    <h2 className="mb-6 text-center text-3xl font-bold text-yellow-300">
-      Analisis Emosi
-    </h2>
+    
+<h2 className="mb-6 text-center text-3xl font-bold text-yellow-300">
+  {language === "id" ? "Analisis Emosi" : "Emotional Analysis"}
+</h2>
 
     <div className="w-full min-w-0">
       <ResponsiveContainer width="100%" height={320}>
