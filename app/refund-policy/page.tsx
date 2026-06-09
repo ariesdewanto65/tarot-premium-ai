@@ -63,6 +63,12 @@ export default function RefundPolicyPage() {
             For refund-related questions, please contact us through the Contact
             page.
           </p>
+            <a
+              href="/"
+               className="mt-8 inline-block text-yellow-300 underline hover:text-yellow-200"
+             >
+               ← Back / Kembali
+             </a>
         </section>
       </div>
     </main>

@@ -58,6 +58,14 @@ export default function DisclaimerPage() {
             features. It does not guarantee any specific personal outcome,
             prediction, or result.
           </p>
+
+            <a
+              href="/"
+                className="mt-8 inline-block text-yellow-300 underline hover:text-yellow-200"
+              >
+               ← Back / Kembali
+             </a>
+
         </section>
       </div>
     </main>
