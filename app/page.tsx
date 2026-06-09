@@ -1315,6 +1315,34 @@ supaya user tidak bingung.
 </div>        
 
       )}
+   
+     <footer className="mt-12 border-t border-white/10 pt-6 text-center text-xs text-white/50">
+  <p>
+    THE CHARIOT / TAROT PREMIUM is a digital entertainment service.
+  </p>
+
+  <div className="mt-3 flex flex-wrap justify-center gap-4">
+    <a href="/terms" className="hover:text-yellow-300">
+      Terms
+    </a>
+
+    <a href="/privacy" className="hover:text-yellow-300">
+      Privacy
+    </a>
+
+    <a href="/refund-policy" className="hover:text-yellow-300">
+      Refund Policy
+    </a>
+
+    <a href="/contact" className="hover:text-yellow-300">
+      Contact
+    </a>
+
+    <a href="/disclaimer" className="hover:text-yellow-300">
+      Disclaimer
+    </a>
+  </div>
+</footer>
 
     </main>
 
