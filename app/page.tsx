@@ -164,6 +164,7 @@ useEffect(() => {
    
    const safeReading =
   reading || "";
+  
 
 const sedih =
   ((safeReading.match(
@@ -217,6 +218,11 @@ const emotionData = [
   const [selectedCards, setSelectedCards] =
     useState<string[]>([]);
 
+//const showLegalFooter =
+ // question.trim() === "" &&
+  //selectedCards.length === 0;
+  const [showLegalFooter, setShowLegalFooter] =
+  useState(true);
 
   const [replaceIndex, setReplaceIndex] =
     useState(0);
@@ -302,22 +308,20 @@ const emotionData = [
 
   };
 
-  /* START READING */
-  const handleReading = () => {
+/* START READING */
+const handleReading = () => {
+  setShowLegalFooter(false); // ✅ PINDAH KE SINI
 
-    setLoading(true);
+  setLoading(true);
 
-    setTimeout(() => {
+  setTimeout(() => {
+    shuffleDeck();
 
-      shuffleDeck();
+    setLoading(false);
 
-      setLoading(false);
-
-      setShowCards(true);
-
-    }, 2500);
-
-  };
+    setShowCards(true);
+  }, 2500);
+};
 
   /* REVEAL RESULT */
   const handleReveal = async () => {
@@ -1198,13 +1202,12 @@ return (
           {question.trim() !==
             "" && (
 
-            <button
-              type="button"
-              onClick={
-                handleReading
-              }
+             <button
+                type="button"
+              onClick={handleReading}
               className="w-full bg-yellow-500 hover:bg-yellow-400 transition-all duration-300 text-black py-4 rounded-2xl text-lg md:text-xl font-bold shadow-[0_0_45px_rgba(255,215,0,0.7)]"
             >
+            
 
               {language === "id"
                 ? "MULAI PEMBACAAN"
@@ -1316,33 +1319,36 @@ supaya user tidak bingung.
 
       )}
    
-     <footer className="mt-12 border-t border-white/10 pt-6 text-center text-xs text-white/50">
-  <p>
-    THE CHARIOT / TAROT PREMIUM is a digital entertainment service.
-  </p>
+    {showLegalFooter && (
+  <footer className="mt-12 border-t border-white/10 pt-6 text-center text-xs text-white/50">
+    <p>
+      THE CHARIOT / TAROT PREMIUM is a digital entertainment service.
+    </p>
 
-  <div className="mt-3 flex flex-wrap justify-center gap-4">
-    <a href="/terms" className="hover:text-yellow-300">
-      Terms
-    </a>
+    <div className="mt-3 flex flex-wrap justify-center gap-4">
+      <a href="/terms" className="hover:text-yellow-300">
+        Terms
+      </a>
 
-    <a href="/privacy" className="hover:text-yellow-300">
-      Privacy
-    </a>
+      <a href="/privacy" className="hover:text-yellow-300">
+        Privacy
+      </a>
 
-    <a href="/refund-policy" className="hover:text-yellow-300">
-      Refund Policy
-    </a>
+      <a href="/refund-policy" className="hover:text-yellow-300">
+        Refund Policy
+      </a>
 
-    <a href="/contact" className="hover:text-yellow-300">
-      Contact
-    </a>
+      <a href="/contact" className="hover:text-yellow-300">
+        Contact
+      </a>
 
-    <a href="/disclaimer" className="hover:text-yellow-300">
-      Disclaimer
-    </a>
-  </div>
-</footer>
+      <a href="/disclaimer" className="hover:text-yellow-300">
+        Disclaimer
+      </a>
+    </div>
+  </footer>
+)}
+
 
     </main>
 

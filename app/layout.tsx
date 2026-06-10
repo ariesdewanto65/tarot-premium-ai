@@ -1,3 +1,4 @@
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata = {
@@ -10,24 +11,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
-
     <html lang="en">
-
       <body>
-
         {children}
-        
-        <script
-         src="https://app.sandbox.midtrans.com/snap/snap.js"
-          data-client-key="Mid-client-2jn-DmgJzchdMdBHtaskkill /PID 15376 /F"
-          
->        </script>
-      </body> 
 
+        <Script
+          src="https://app.sandbox.midtrans.com/snap/snap.js"
+          data-client-key="Mid-client-mtLz68f3Tqv8I6PQ"
+          strategy="afterInteractive"
+        />
+      </body>
     </html>
-
   );
-
 }
