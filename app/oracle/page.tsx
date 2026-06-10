@@ -225,43 +225,66 @@ const startReading = async () => {
           bukan prediksi mutlak. Gunakan sebagai kompas refleksi dan arah tindakan.
         </p>
 
-        <div className="h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={oracleChart} layout="vertical">
-              <XAxis
-                type="number"
-                domain={[0, 100]}
-                tick={{ fill: "#fef3c7", fontSize: 12 }}
-              />
+       <div className="mt-6 h-[420px] w-full overflow-visible">
+  <ResponsiveContainer width="100%" height="100%">
+    <BarChart
+      data={oracleChart}
+      layout="vertical"
+      margin={{
+        top: 10,
+        right: 16,
+        left: 0,
+        bottom: 10,
+      }}
+      barCategoryGap={22}
+    >
+      <XAxis
+        type="number"
+        domain={[0, 100]}
+        hide
+      />
 
-              <YAxis
-               
-                type="category"
-                dataKey="name"
-                 width={170}
-               tick={{ fill: "#fef3c7", fontSize: 12 }}
-                  
-              />
+      <YAxis
+        type="category"
+        dataKey="name"
+        width={115}
+        tick={{
+          fill: "#fef3c7",
+          fontSize: 10,
+        }}
+        tickLine={false}
+        axisLine={false}
+      />
 
-             <Tooltip
-                  cursor={{ fill: "rgba(250,204,21,0.08)" }}
-                    formatter={(value) => [`${value}%`, "Energi"]}
-                  contentStyle={{
-                   backgroundColor: "#111827",
-                   border: "1px solid rgba(250,204,21,0.4)",
-                  borderRadius: "14px",
-                   color: "#fff",
-                   }}
-                />
+      <Tooltip
+        allowEscapeViewBox={{
+          x: true,
+          y: true,
+        }}
+        cursor={{ fill: "rgba(250,204,21,0.08)" }}
+        formatter={(value) => [`${value}%`, "Energi"]}
+        contentStyle={{
+          backgroundColor: "#111827",
+          border: "1px solid rgba(250,204,21,0.4)",
+          borderRadius: "14px",
+          color: "#fff",
+          fontSize: "12px",
+          padding: "10px 12px",
+        }}
+        wrapperStyle={{
+          zIndex: 50,
+        }}
+      />
 
-              <Bar
-                dataKey="value"
-                radius={[0, 12, 12, 0]}
-                fill="#facc15"
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <Bar
+        dataKey="value"
+        radius={[0, 12, 12, 0]}
+        fill="#facc15"
+        barSize={18}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
       </div>
     )}
 
