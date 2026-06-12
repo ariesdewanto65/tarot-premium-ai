@@ -218,9 +218,6 @@ const emotionData = [
   const [selectedCards, setSelectedCards] =
     useState<string[]>([]);
 
-//const showLegalFooter =
- // question.trim() === "" &&
-  //selectedCards.length === 0;
   const [showLegalFooter, setShowLegalFooter] =
   useState(true);
 
@@ -1337,7 +1334,13 @@ supaya user tidak bingung.
       <a href="/refund-policy" className="hover:text-yellow-300">
         Refund Policy
       </a>
-
+    
+       <a
+      href="/faq"
+      className="underline underline-offset-4 transition hover:text-yellow-300"
+        >
+           FAQ
+       </a>  
       <a href="/contact" className="hover:text-yellow-300">
         Contact
       </a>

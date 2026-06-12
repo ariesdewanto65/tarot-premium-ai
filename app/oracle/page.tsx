@@ -3,7 +3,8 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+//import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { goddessDeck, type GoddessCard } from "./goddessDeck";
 import {
@@ -27,9 +28,12 @@ export default function OraclePage() {
   const [reading, setReading] = useState("");
   const [showReading, setShowReading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
   const [oracleChart, setOracleChart] = useState<
-  { name: string; value: number }[]
->([]);
+    { name: string; value: number }[]
+  >([]);
+
+  const oracleResultRef = useRef<HTMLDivElement>(null);
   const maxCards = 3;
 
   useEffect(() => {
@@ -72,6 +76,8 @@ export default function OraclePage() {
   const resetSelection = () => {
   setSelectedCards([]);
   setShowReading(false);
+  setReading("");
+  setOracleChart([]);
 };
 
 const startReading = async () => {
@@ -112,37 +118,80 @@ const startReading = async () => {
   } finally {
     setIsProcessing(false);
   }
+};
 
-
-  setIsProcessing(true);
-  setShowReading(false);
-  setReading("");
-  setOracleChart([]);
-
-  try {
-    const response = await fetch("/api/oracle", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question,
-        cards: selectedCards,
-      }),
-    });
-
-    const data = await response.json();
-
-    console.log("ORACLE API RESULT:", data);
-
-    setReading(data.reading || "");
-    setOracleChart(data.chartData || []);
-    setShowReading(true);
-  } catch (error) {
-    console.error("ORACLE API ERROR:", error);
-  } finally {
-    setIsProcessing(false);
+const handlePrintOracle = () => {
+  if (!oracleResultRef.current) {
+    return;
   }
+
+  const printWindow = window.open(
+    "",
+    "_blank",
+    "width=900,height=700"
+  );
+
+  if (!printWindow) {
+    alert(
+      "Popup diblokir browser. Izinkan popup untuk mencetak hasil."
+    );
+    return;
+  }
+
+  const resultContent = oracleResultRef.current.innerHTML;
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="id">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Hasil Oracle Reading</title>
+
+        <style>
+          body {
+            margin: 0;
+            padding: 40px;
+            background: #ffffff;
+            color: #111827;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+
+          h2,
+          h3 {
+            color: #92400e;
+          }
+
+          p {
+            line-height: 1.8;
+          }
+
+          button {
+            display: none !important;
+          }
+
+          svg {
+            max-width: 100%;
+          }
+
+          @page {
+            size: A4;
+            margin: 18mm;
+          }
+        </style>
+      </head>
+
+      <body>
+        ${resultContent}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  setTimeout(() => {
+    printWindow.focus();
+    printWindow.print();
+  }, 700);
 };
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#14532d_0%,#020617_45%,#000_100%)] text-white">
@@ -209,7 +258,11 @@ const startReading = async () => {
 )}
 
 {showReading && reading && (
-  <div className="mt-8 rounded-3xl border border-yellow-400/40 bg-black/40 p-6 text-white shadow-[0_0_45px_rgba(250,204,21,0.18)]">
+  <div
+    ref={oracleResultRef}
+    className="mt-8 rounded-3xl border border-yellow-400/40 bg-black/40 p-6 text-white shadow-[0_0_45px_rgba(250,204,21,0.18)]"
+  >
+    
     <h2 className="mb-4 text-2xl font-bold text-yellow-300">
       Hasil Oracle Reading
     </h2>
@@ -288,10 +341,22 @@ const startReading = async () => {
       </div>
     )}
 
-    <p className="whitespace-pre-line leading-8 text-white/85">
-      {reading}
-    </p>
-  </div>
+   <p className="whitespace-pre-line leading-8 text-white/85">
+  {reading}
+</p>
+
+{/* TOMBOL PRINT */}
+<div className="mt-8 border-t border-yellow-400/20 pt-6">
+  <button
+    type="button"
+    onClick={handlePrintOracle}
+    className="w-full rounded-2xl border border-yellow-400/60 bg-yellow-500 px-6 py-4 text-base font-bold text-black shadow-[0_0_35px_rgba(250,204,21,0.3)] transition-all duration-200 hover:bg-yellow-300 active:scale-[0.97]"
+  >
+    PRINT / SIMPAN PDF
+  </button>
+</div>
+</div>
+
 )}
 
         {/* QUESTION BOX */}
