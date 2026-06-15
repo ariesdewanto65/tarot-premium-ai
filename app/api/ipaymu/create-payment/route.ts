@@ -1,11 +1,15 @@
 
  import { NextResponse } from "next/server";
 import crypto from "crypto";
- export async function POST() {
+ export async function POST(request: Request) {
   try {
     const va = process.env.IPAYMU_VA;
     const apiKey = process.env.IPAYMU_API_KEY;
     const baseUrl = process.env.IPAYMU_BASE_URL;
+    const appUrl =
+    request.headers.get("origin") ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+        "http://localhost:3000";
 
     if (!va || !apiKey || !baseUrl) {
       return NextResponse.json(
@@ -18,9 +22,9 @@ import crypto from "crypto";
       product: ["Tarot Premium AI"],
       qty: ["1"],
       price: ["59900"],
-      returnUrl: "http://localhost:3000/payment/success",
-      cancelUrl: "http://localhost:3000/payment/cancel",
-      notifyUrl: "http://localhost:3000/api/ipaymu/callback",
+      returnUrl: `${appUrl}/payment/success`,
+      cancelUrl: `${appUrl}/payment/cancel`,
+      notifyUrl: `${appUrl}/api/ipaymu/callback`,
       referenceId: `TAROT-${Date.now()}`,
       buyerName: "Customer Tarot Premium",
       buyerEmail: "customer@example.com",
