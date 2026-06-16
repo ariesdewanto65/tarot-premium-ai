@@ -57,10 +57,10 @@ export default function PremiumPage() {
             THE CHARIOT PREMIUM
           </h1>
 
-          <p className="mt-3 text-sm text-yellow-100/80 md:text-base">
-            Buka pembacaan tarot premium yang lebih dalam, personal,
-            emosional, dan eksklusif.
-          </p>
+         <p className="mt-3 text-sm text-yellow-100/80 md:text-base">
+            Buka pengalaman hiburan digital interaktif yang lebih personal,
+            visual, dan eksklusif.
+         </p>
         </div>
 
         <div className="rounded-3xl border border-yellow-400/40 bg-black/35 p-6 shadow-[0_0_55px_rgba(250,204,21,0.18)] md:p-8">
@@ -83,9 +83,9 @@ export default function PremiumPage() {
               </h3>
 
               <ul className="mt-3 space-y-2 text-sm text-white/80">
-                <li>• Reading lebih panjang dan mendalam</li>
-                <li>• Analisis energi emosional</li>
-                <li>• Interpretasi kartu lebih personal</li>
+                <li>• Konten naratif lebih panjang dan mendalam</li>
+                <li>• Refleksi personal berbasis pilihan kartu</li>
+                <li>• Interpretasi simbolik yang lebih personal</li>
                 <li>• Menggunakan model AI premium</li>
               </ul>
             </div>
@@ -96,9 +96,9 @@ export default function PremiumPage() {
               </h3>
 
               <ul className="mt-3 space-y-2 text-sm text-white/80">
-                <li>• Analisis energi ruangan</li>
-                <li>• Rekomendasi arah dan elemen</li>
-                <li>• Cocok untuk kamar, rumah, dan usaha</li>
+               <li>• Inspirasi tata ruang dan elemen visual</li>
+                <li>• Rekomendasi arah, warna, dan suasana</li>
+                <li>• Cocok untuk kamar, rumah, dan ruang kerja</li>
                 <li>• Fitur segera ditambahkan</li>
               </ul>
             </div>
