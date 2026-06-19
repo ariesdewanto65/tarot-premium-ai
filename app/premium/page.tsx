@@ -122,8 +122,8 @@ export default function PremiumPage() {
           )}
 
           <p className="mt-6 text-center text-xs text-white/50">
-            Pembayaran diproses melalui iPaymu Sandbox. Setelah pembayaran
-            selesai, Anda akan diarahkan kembali ke halaman aplikasi.
+             Pembayaran diproses melalui iPaymu. Setelah pembayaran selesai, Anda akan
+             diarahkan kembali ke halaman aplikasi.
           </p>
         </div>
       </section>
