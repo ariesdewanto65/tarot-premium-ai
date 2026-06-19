@@ -58,7 +58,7 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-yellow-200">
               Website
             </h2>
-            <p className="mt-2">https://tarot-premium-ai.vercel.app</p>
+            <p className="mt-2">https://tarot.pojokdigitalstudio.com</p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
