@@ -1,15 +1,29 @@
-
- import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import crypto from "crypto";
- export async function POST(request: Request) {
+
+function getIpaymuTimestamp() {
+  const now = new Date();
+
+  const yyyy = now.getFullYear().toString();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mi = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  return `${yyyy}${mm}${dd}${hh}${mi}${ss}`;
+}
+
+export async function POST(request: Request) {
   try {
-    const va = process.env.IPAYMU_VA;
-    const apiKey = process.env.IPAYMU_API_KEY;
-    const baseUrl = process.env.IPAYMU_BASE_URL;
+    const va = process.env.IPAYMU_VA?.trim();
+    const apiKey = process.env.IPAYMU_API_KEY?.trim();
+    const baseUrl = process.env.IPAYMU_BASE_URL?.trim();
+
     const appUrl =
-    request.headers.get("origin") ||
-      process.env.NEXT_PUBLIC_SITE_URL ||
-        "http://localhost:3000";
+      process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+      request.headers.get("origin") ||
+      "https://tarot-premium-ai.vercel.app";
 
     if (!va || !apiKey || !baseUrl) {
       return NextResponse.json(
@@ -32,17 +46,22 @@ import crypto from "crypto";
     };
 
     const bodyJson = JSON.stringify(body);
+
     const bodyHash = crypto
       .createHash("sha256")
       .update(bodyJson)
-      .digest("hex");
+      .digest("hex")
+      .toLowerCase();
 
     const stringToSign = `POST:${va}:${bodyHash}:${apiKey}`;
 
     const signature = crypto
       .createHmac("sha256", apiKey)
       .update(stringToSign)
-      .digest("hex");
+      .digest("hex")
+      .toLowerCase();
+
+    const timestamp = getIpaymuTimestamp();
 
     const response = await fetch(`${baseUrl}/api/v2/payment`, {
       method: "POST",
@@ -50,12 +69,22 @@ import crypto from "crypto";
         "Content-Type": "application/json",
         va,
         signature,
-        timestamp: new Date().toISOString(),
+        timestamp,
       },
       body: bodyJson,
     });
 
     const data = await response.json();
+
+    console.log("IPAYMU REQUEST CHECK:", {
+      baseUrl,
+      vaLast4: va.slice(-4),
+      apiKeyLast4: apiKey.slice(-4),
+      timestamp,
+      bodyHash,
+      stringToSignPreview: `POST:${va}:BODY_HASH:${apiKey.slice(-4)}`,
+      status: response.status,
+    });
 
     console.log("IPAYMU RESPONSE:", data);
 
@@ -69,5 +98,3 @@ import crypto from "crypto";
     );
   }
 }
-
-           
