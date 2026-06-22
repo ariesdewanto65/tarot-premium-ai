@@ -23,7 +23,8 @@ export async function POST(request: Request) {
     const appUrl =
       process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
       request.headers.get("origin") ||
-      "https://tarot.pojokdigitalstudio.com";
+      //"https://tarot.pojokdigitalstudio.com";
+       "https://tarot-premium-lyxplu3mj-aries-pa-s-projects.vercel.app";
 
     if (!va || !apiKey || !baseUrl) {
       return NextResponse.json(
